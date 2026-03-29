@@ -1,0 +1,6 @@
+pre-commit:
+  parallel: false
+  stage_fixed: true
+  jobs:
+    - run: pnpm fmt
+    - run: pnpm lint:fix
