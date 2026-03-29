@@ -254,7 +254,7 @@ const nearbyLocations = await payload.find({
 ### Join Fields (Reverse Relationships)
 
 ```typescript
-// From Users collection - show user's orders
+// From UsersCollection collection - show user's orders
 {
   name: 'orders',
   type: 'join',

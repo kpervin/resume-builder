@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    resumes: Resume;
     "payload-kv": PayloadKv;
     "payload-locked-documents": PayloadLockedDocument;
     "payload-preferences": PayloadPreference;
@@ -78,6 +79,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    resumes: ResumesSelect<false> | ResumesSelect<true>;
     "payload-kv": PayloadKvSelect<false> | PayloadKvSelect<true>;
     "payload-locked-documents":
       | PayloadLockedDocumentsSelect<false>
@@ -166,6 +168,35 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resumes".
+ */
+export interface Resume {
+  id: number;
+  title: string;
+  skills?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  experience?:
+    | {
+        title?: string | null;
+        description?: string | null;
+        startDate?: string | null;
+        endDate?: string | null;
+        company?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -195,6 +226,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: "media";
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: "resumes";
+        value: number | Resume;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -278,6 +313,26 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "resumes_select".
+ */
+export interface ResumesSelect<T extends boolean = true> {
+  title?: T;
+  skills?: T;
+  experience?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        startDate?: T;
+        endDate?: T;
+        company?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

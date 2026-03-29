@@ -1,0 +1,53 @@
+.chip-field {
+  &__container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    min-height: 42px;
+    border: 1px solid var(--theme-elevation-150);
+    border-radius: 4px;
+    background: var(--theme-input-bg);
+    cursor: text;
+
+    &:focus-within {
+      border-color: var(--theme-elevation-450);
+    }
+  }
+
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--theme-elevation-100);
+    color: var(--theme-text);
+    font-size: 13px;
+  }
+
+  &__remove {
+    all: unset;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    color: var(--theme-elevation-400);
+
+    &:hover {
+      color: var(--theme-error-500);
+    }
+  }
+
+  &__input {
+    all: unset;
+    flex: 1;
+    min-width: 120px;
+    font-size: 14px;
+    color: var(--theme-text);
+
+    &::placeholder {
+      color: var(--theme-elevation-400);
+    }
+  }
+}

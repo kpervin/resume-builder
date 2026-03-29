@@ -52,7 +52,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media],
+  collections: [UsersCollection, MediaCollection],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET,
   typescript: {
@@ -90,7 +90,7 @@ export const Posts: CollectionConfig = {
 ### Auth Collection with RBAC
 
 ```typescript
-export const Users: CollectionConfig = {
+export const UsersCollection: CollectionConfig = {
   slug: "users",
   auth: true,
   fields: [

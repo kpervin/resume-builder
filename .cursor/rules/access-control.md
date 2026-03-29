@@ -81,7 +81,7 @@ export const authenticatedOrPublished: Access = ({ req: { user } }) => {
 export const organizationScoped: Access = ({ req: { user } }) => {
   if (user?.roles?.includes("admin")) return true;
 
-  // Users see only their organization's data
+  // UsersCollection see only their organization's data
   return {
     organization: {
       equals: user?.organization,
@@ -130,7 +130,7 @@ export const teamMemberAccess: Access = ({ req: { user } }) => {
 Payload does NOT provide a roles system by default. Add a `roles` field to your auth collection:
 
 ```typescript
-export const Users: CollectionConfig = {
+export const UsersCollection: CollectionConfig = {
   slug: "users",
   auth: true,
   fields: [

@@ -30,7 +30,7 @@ export const Posts: CollectionConfig = {
 ## Auth Collection with RBAC
 
 ```typescript
-export const Users: CollectionConfig = {
+export const UsersCollection: CollectionConfig = {
   slug: "users",
   auth: true,
   fields: [
@@ -53,7 +53,7 @@ export const Users: CollectionConfig = {
 ## Upload Collection
 
 ```typescript
-export const Media: CollectionConfig = {
+export const MediaCollection: CollectionConfig = {
   slug: "media",
   upload: {
     staticDir: "media",

@@ -102,7 +102,7 @@ export const recentRecordsAccess = (days: number): Access => {
   };
 };
 
-// Usage: Users see only last 30 days, admins see all
+// Usage: UsersCollection see only last 30 days, admins see all
 export const Logs: CollectionConfig = {
   slug: "logs",
   access: {
@@ -317,7 +317,7 @@ export const SelfServiceCollection: CollectionConfig = {
     // Anyone can read user profiles
     read: () => true,
 
-    // Users can update self, admins can update anyone
+    // UsersCollection can update self, admins can update anyone
     update: ({ req: { user }, id }) => {
       if (!user) return false;
       if (user.roles?.includes("admin")) return true;
