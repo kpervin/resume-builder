@@ -1,5 +1,5 @@
 import { CollectionConfig } from "payload";
-import { chipField } from "@/fields/ChipField";
+import { chipField } from "@/fields/ChipField/chip.field";
 
 export const ResumesCollection = {
   slug: "resumes",

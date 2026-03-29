@@ -1,11 +1,10 @@
 "use client";
 import React, { useState, useRef } from "react";
 import { useField, FieldLabel } from "@payloadcms/ui";
-import type { JsonFieldClientProps } from "payload";
+import { JSONFieldClientComponent } from "payload";
 
-export function ChipField({ field, path }: JsonFieldClientProps) {
-  const { value, setValue } = useField<string[]>({ path: path ?? field.name });
-  const chips = value ?? [];
+export const ChipField: JSONFieldClientComponent = ({ field, path }) => {
+  const { value: chips = [], setValue } = useField<string[]>({ path: path ?? field.name });
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -62,4 +61,4 @@ export function ChipField({ field, path }: JsonFieldClientProps) {
       </div>
     </div>
   );
-}
+};
