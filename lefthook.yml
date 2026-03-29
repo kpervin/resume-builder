@@ -1,6 +1,14 @@
+# yaml-language-server: $schema=./node_modules/lefthook/schema.json
+
 pre-commit:
   parallel: false
-  stage_fixed: true
   jobs:
+    - run: |
+        pnpm codegen;
+        git add \
+         src/payload-types.ts \
+         "src/app/(payload)/admin/importMap.js";
     - run: pnpm fmt
+      stage_fixed: true
     - run: pnpm lint:fix
+      stage_fixed: true
