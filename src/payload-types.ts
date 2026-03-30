@@ -184,11 +184,26 @@ export interface Resume {
     | null;
   experience?:
     | {
-        title?: string | null;
-        description?: string | null;
-        startDate?: string | null;
+        jobTitle: string;
+        company: string;
+        description: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ("ltr" | "rtl") | null;
+            format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        startDate: string;
+        current?: boolean | null;
         endDate?: string | null;
-        company?: string | null;
         id?: string | null;
       }[]
     | null;
@@ -324,11 +339,12 @@ export interface ResumesSelect<T extends boolean = true> {
   experience?:
     | T
     | {
-        title?: T;
+        jobTitle?: T;
+        company?: T;
         description?: T;
         startDate?: T;
+        current?: T;
         endDate?: T;
-        company?: T;
         id?: T;
       };
   updatedAt?: T;
