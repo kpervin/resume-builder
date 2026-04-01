@@ -4,7 +4,7 @@ import { Address, User } from "@/payload-types";
 
 const AddressPartOpts = {
   admin: {
-    // hidden: true,
+    hidden: true,
     readOnly: true,
   },
 } as const satisfies Omit<TextField, "name" | "type">;

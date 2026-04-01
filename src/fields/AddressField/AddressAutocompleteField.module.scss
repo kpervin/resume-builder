@@ -1,0 +1,32 @@
+.wrapper {
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--theme-elevation-50, #fff);
+  border: 1px solid var(--theme-elevation-150, #ccc);
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.dropdownItem {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--theme-elevation-100, #eee);
+  font-size: 14px;
+
+  &:hover {
+    background: var(--theme-elevation-100, #f0f0f0);
+  }
+}

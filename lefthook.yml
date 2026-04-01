@@ -4,9 +4,9 @@ pre-commit:
   parallel: false
   jobs:
     - run: pnpm codegen
-    - run: pnpm fmt
+    - run: pnpm fmt {staged_files}
       stage_fixed: true
-    - run: pnpm lint:fix
+    - run: pnpm lint:fix {staged_files}
       stage_fixed: true
     - run: |
         git add \

@@ -1,10 +1,12 @@
 "use client";
 
-import { useField, useForm, TextInput } from "@payloadcms/ui";
+import { TextInput, useField, useForm } from "@payloadcms/ui";
 import type { TextFieldClientComponent } from "payload";
-import React, { useState, useEffect, type ChangeEvent } from "react";
+import React, { useEffect, useState } from "react";
 
-import { searchAddress, type PhotonFeature } from "./photon.client";
+import { type PhotonFeature, searchAddress } from "./photon.client";
+
+import styles from "./AddressAutocompleteField.module.scss";
 
 function formatAddress(feature: PhotonFeature) {
   const p = feature.properties;
@@ -80,53 +82,22 @@ const AddressAutocomplete: TextFieldClientComponent = (props) => {
   };
 
   return (
-    <div style={{ marginBottom: "1rem", position: "relative" }}>
+    <div className={styles.wrapper}>
       <label className="field-label">Search Address (OpenStreetMap)</label>
 
       <TextInput
+        hasMany={false} // Only for type-safety
         path={path}
         value={inputValue}
-        onChange={(e: ChangeEvent<HTMLInputElement>) => setInputValue(e.target.value)}
+        onChange={(e) => {
+          setInputValue(e.target.value);
+        }}
         placeholder="Start typing an address..."
       />
-
       {isOpen && results.length > 0 && (
-        <ul
-          style={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            right: 0,
-            zIndex: 10,
-            margin: 0,
-            padding: 0,
-            listStyle: "none",
-            background: "var(--theme-elevation-50, #fff)", // adapts to Payload dark/light mode
-            border: "1px solid var(--theme-elevation-150, #ccc)",
-            borderRadius: "4px",
-            boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-            maxHeight: "200px",
-            overflowY: "auto",
-          }}
-        >
+        <ul className={styles.dropdown}>
           {results.map((feature, i) => (
-            <li
-              key={i}
-              // use onMouseDown instead of onClick so it fires before the input loses focus
-              onMouseDown={() => handleSelect(feature)}
-              style={{
-                padding: "10px",
-                cursor: "pointer",
-                borderBottom: "1px solid var(--theme-elevation-100, #eee)",
-                fontSize: "14px",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "var(--theme-elevation-100, #f0f0f0)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "transparent";
-              }}
-            >
+            <li key={i} onMouseDown={() => handleSelect(feature)} className={styles.dropdownItem}>
               {formatAddress(feature)}
             </li>
           ))}
