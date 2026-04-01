@@ -1,9 +1,18 @@
 "use client";
 
-import React, { useState, useEffect, type ChangeEvent } from "react";
 import { useField, useForm, TextInput } from "@payloadcms/ui";
 import type { TextFieldClientComponent } from "payload";
+import React, { useState, useEffect, type ChangeEvent } from "react";
+
 import { searchAddress, type PhotonFeature } from "./photon.client";
+
+function formatAddress(feature: PhotonFeature) {
+  const p = feature.properties;
+
+  return [p.name, p.housenumber, p.street, p.city || p.town || p.village, p.state, p.postcode]
+    .filter(Boolean)
+    .join(", ");
+}
 
 const AddressAutocomplete: TextFieldClientComponent = (props) => {
   const {
@@ -40,15 +49,7 @@ const AddressAutocomplete: TextFieldClientComponent = (props) => {
   const handleSelect = (feature: PhotonFeature) => {
     const p = feature.properties;
 
-    const formattedAddress = [
-      p.housenumber,
-      p.street,
-      p.city || p.town || p.village,
-      p.state,
-      p.country,
-    ]
-      .filter(Boolean)
-      .join(", ");
+    const formattedAddress = formatAddress(feature);
 
     setInputValue(formattedAddress);
     setValue(formattedAddress);
@@ -57,29 +58,24 @@ const AddressAutocomplete: TextFieldClientComponent = (props) => {
     const basePath = path.replace(`.${name}`, "");
 
     dispatchFields({
-      type: "UPDATE",
-      path: `${basePath}.street`,
-      value: `${p.housenumber || ""} ${p.street || ""}`.trim(),
-    });
-    dispatchFields({
-      type: "UPDATE",
-      path: `${basePath}.city`,
-      value: p.city || p.town || p.village || "",
-    });
-    dispatchFields({
-      type: "UPDATE",
-      path: `${basePath}.state`,
-      value: p.state || "",
-    });
-    dispatchFields({
-      type: "UPDATE",
-      path: `${basePath}.zipCode`,
-      value: p.postcode || "",
-    });
-    dispatchFields({
-      type: "UPDATE",
-      path: `${basePath}.country`,
-      value: p.country || "",
+      type: "UPDATE_MANY",
+      formState: {
+        [`${basePath}.street`]: {
+          value: `${p.housenumber || ""} ${p.street || ""}`.trim(),
+        },
+        [`${basePath}.city`]: {
+          value: p.city || p.town || p.village || "",
+        },
+        [`${basePath}.state`]: {
+          value: p.state || "",
+        },
+        [`${basePath}.postalCode`]: {
+          value: p.postcode || "",
+        },
+        [`${basePath}.country`]: {
+          value: p.country || "",
+        },
+      },
     });
   };
 
@@ -113,41 +109,27 @@ const AddressAutocomplete: TextFieldClientComponent = (props) => {
             overflowY: "auto",
           }}
         >
-          {results.map((feature, i) => {
-            const p = feature.properties;
-            const label = [
-              p.name,
-              p.housenumber,
-              p.street,
-              p.city || p.town || p.village,
-              p.state,
-              p.postcode,
-            ]
-              .filter(Boolean)
-              .join(", ");
-
-            return (
-              <li
-                key={i}
-                // use onMouseDown instead of onClick so it fires before the input loses focus
-                onMouseDown={() => handleSelect(feature)}
-                style={{
-                  padding: "10px",
-                  cursor: "pointer",
-                  borderBottom: "1px solid var(--theme-elevation-100, #eee)",
-                  fontSize: "14px",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "var(--theme-elevation-100, #f0f0f0)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "transparent";
-                }}
-              >
-                {label}
-              </li>
-            );
-          })}
+          {results.map((feature, i) => (
+            <li
+              key={i}
+              // use onMouseDown instead of onClick so it fires before the input loses focus
+              onMouseDown={() => handleSelect(feature)}
+              style={{
+                padding: "10px",
+                cursor: "pointer",
+                borderBottom: "1px solid var(--theme-elevation-100, #eee)",
+                fontSize: "14px",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "var(--theme-elevation-100, #f0f0f0)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+              }}
+            >
+              {formatAddress(feature)}
+            </li>
+          ))}
         </ul>
       )}
     </div>

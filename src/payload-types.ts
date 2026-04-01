@@ -132,14 +132,7 @@ export interface User {
     lastName?: string | null;
     fullName?: string | null;
   };
-  address?: {
-    autocomplete?: string | null;
-    street?: string | null;
-    city?: string | null;
-    state?: string | null;
-    postalCode?: string | null;
-    country?: string | null;
-  };
+  address?: Address;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -158,6 +151,18 @@ export interface User {
     | null;
   password?: string | null;
   collection: "users";
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Address".
+ */
+export interface Address {
+  autocomplete?: string | null;
+  street?: string | null;
+  city?: string | null;
+  state?: string | null;
+  postalCode?: string | null;
+  country?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -313,16 +318,7 @@ export interface UsersSelect<T extends boolean = true> {
         lastName?: T;
         fullName?: T;
       };
-  address?:
-    | T
-    | {
-        autocomplete?: T;
-        street?: T;
-        city?: T;
-        state?: T;
-        postalCode?: T;
-        country?: T;
-      };
+  address?: T | AddressSelect<T>;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -339,6 +335,18 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Address_select".
+ */
+export interface AddressSelect<T extends boolean = true> {
+  autocomplete?: T;
+  street?: T;
+  city?: T;
+  state?: T;
+  postalCode?: T;
+  country?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

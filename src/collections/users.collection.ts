@@ -1,6 +1,7 @@
 import type { CollectionConfig, FieldHook } from "payload";
-import { User } from "@/payload-types";
+
 import { addressField } from "@/fields/AddressField/address.field";
+import { User } from "@/payload-types";
 
 export const UsersCollection = {
   slug: "users",
@@ -12,6 +13,15 @@ export const UsersCollection = {
     {
       type: "group",
       name: "name",
+      hooks: {
+        afterChange: [
+          (({ value }) => {
+            if (!value) return value;
+            value.fullName = `${value?.firstName} ${value?.lastName}`;
+            return value;
+          }) satisfies FieldHook<User, User["name"]>,
+        ],
+      },
       fields: [
         { name: "firstName", type: "text" },
         { name: "lastName", type: "text" },
@@ -19,6 +29,9 @@ export const UsersCollection = {
           name: "fullName",
           type: "text",
           virtual: true,
+          admin: {
+            readOnly: true,
+          },
           hooks: {
             afterRead: [
               (({ siblingData }) =>
