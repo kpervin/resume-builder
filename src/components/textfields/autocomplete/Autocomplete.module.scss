@@ -1,14 +1,18 @@
 .wrapper {
   margin-bottom: 1rem;
-  position: relative;
+}
+
+.textInput {
+  anchor-name: --autocomplete-input;
 }
 
 .dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  z-index: 10;
+  position-anchor: --autocomplete-input;
+  position-area: bottom span-all;
+  top: calc(anchor(bottom) + 4px);
+  left: anchor(left);
+  width: anchor-size(width);
+
   margin: 0;
   padding: 0;
   list-style: none;
@@ -25,6 +29,7 @@
   cursor: pointer;
   border-bottom: 1px solid var(--theme-elevation-100, #eee);
   font-size: 14px;
+  background: transparent;
 
   &:hover {
     background: var(--theme-elevation-100, #f0f0f0);
