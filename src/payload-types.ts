@@ -127,6 +127,19 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
+  name?: {
+    firstName?: string | null;
+    lastName?: string | null;
+    fullName?: string | null;
+  };
+  address?: {
+    autocomplete?: string | null;
+    street?: string | null;
+    city?: string | null;
+    state?: string | null;
+    postalCode?: string | null;
+    country?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -293,6 +306,23 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  name?:
+    | T
+    | {
+        firstName?: T;
+        lastName?: T;
+        fullName?: T;
+      };
+  address?:
+    | T
+    | {
+        autocomplete?: T;
+        street?: T;
+        city?: T;
+        state?: T;
+        postalCode?: T;
+        country?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   email?: T;
