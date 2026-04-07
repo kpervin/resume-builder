@@ -1,4 +1,5 @@
 import { CollectionConfig, Condition, Validate } from "payload";
+
 import { chipField } from "@/fields/ChipField/chip.field";
 import { Resume } from "@/payload-types";
 
@@ -6,10 +7,22 @@ type ExperienceItem = NonNullable<Resume["experience"]>[number];
 
 export const ResumesCollection = {
   slug: "resumes",
+  versions: {
+    drafts: true,
+  },
   fields: [
     {
-      name: "title",
-      type: "text",
+      name: "applicant",
+      type: "relationship",
+      relationTo: "applicants",
+      required: true,
+      admin: {
+        position: "sidebar",
+      },
+    },
+    {
+      name: "description",
+      type: "textarea",
       required: true,
     },
     chipField("skills", "Skills"),
