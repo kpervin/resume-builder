@@ -8,12 +8,10 @@ const PhoneField: FC<TextFieldClientProps> = ({ path, field: { label, admin }, .
   const { value, setValue, showError } = useField<string>({ path });
 
   const formatPhoneNumber = (val: string) => {
-    if (!val) return "";
-    const digits = val.replace(/\D/g, "");
-    if (digits.length === 0) return "";
-    if (digits.length <= 3) return `(${digits}`;
-    if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
-    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+    const [_, p1, p2, p3] = val.replace(/\D/g, "").match(/^(\d{0,3})(\d{0,3})(\d{0,4})/) || [];
+    if (p3) return `(${p1}) ${p2}-${p3}`;
+    if (p2) return `(${p1}) ${p2}`;
+    return p1 ? `(${p1}` : "";
   };
 
   const handleChange = useCallback(
