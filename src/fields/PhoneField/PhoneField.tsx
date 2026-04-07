@@ -15,10 +15,7 @@ const PhoneField: FC<TextFieldClientProps> = ({ path, field: { label, admin }, .
   };
 
   const handleChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const rawValue = e.target.value.replace(/\D/g, "");
-      setValue(rawValue);
-    },
+    (e: ChangeEvent<HTMLInputElement>) => setValue(e.target.value.replace(/\D/g, "").slice(0, 10)),
     [setValue],
   );
 
