@@ -131,6 +131,7 @@ export interface User {
     fullName?: string | null;
   };
   address?: Address;
+  phone?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -317,6 +318,7 @@ export interface UsersSelect<T extends boolean = true> {
         fullName?: T;
       };
   address?: T | AddressSelect<T>;
+  phone?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;

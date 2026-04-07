@@ -46,5 +46,10 @@ export const UsersCollection = {
       ],
     },
     addressField,
+    {
+      name: "phone",
+      type: "text",
+      admin: { components: { Field: "/fields/PhoneField/PhoneField.tsx" } },
+    },
   ],
 } as const satisfies CollectionConfig<"users">;
