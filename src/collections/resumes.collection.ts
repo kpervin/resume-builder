@@ -1,6 +1,7 @@
-import { CollectionConfig, Condition, Validate } from "payload";
+import { CollectionConfig, Condition, FieldHook, Validate } from "payload";
 
 import { Resume } from "@/payload-types";
+import { toTitleCase } from "@/utils/fns";
 
 type ExperienceItem = NonNullable<Resume["experience"]>[number];
 
@@ -43,6 +44,13 @@ export const ResumesCollection = {
           required: true,
           admin: {
             description: "Add skills relevant to this category",
+          },
+          hooks: {
+            beforeChange: [
+              ({ value = [] }) => {
+                return value.map(toTitleCase);
+              },
+            ] satisfies FieldHook<Resume, string[]>[],
           },
           validate: ((value, options) => {
             const { data } = options;
