@@ -1,6 +1,5 @@
 import { CollectionConfig, Condition, Validate } from "payload";
 
-import { chipField } from "@/fields/ChipField/chip.field";
 import { Resume } from "@/payload-types";
 
 type ExperienceItem = NonNullable<Resume["experience"]>[number];
@@ -25,7 +24,47 @@ export const ResumesCollection = {
       type: "textarea",
       required: true,
     },
-    chipField("skills", "Skills"),
+    {
+      name: "skillSections",
+      type: "array",
+      admin: {
+        description: "List of skill categories and associated skills",
+      },
+      fields: [
+        {
+          name: "category",
+          type: "text",
+          required: true,
+        },
+        {
+          name: "skills",
+          type: "text",
+          hasMany: true,
+          required: true,
+          admin: {
+            description: "Add skills relevant to this category",
+          },
+          validate: ((value, options) => {
+            const { data } = options;
+            const allSections = data.skillSections || [];
+            if (!value || !Array.isArray(allSections)) {
+              return true;
+            }
+            const allSkills = allSections.flatMap((section) => section.skills || []);
+            const duplicates = value.filter((skill) => {
+              const occurrences = allSkills.filter(
+                (s) => s?.toLowerCase().trim() === skill.toLowerCase().trim(),
+              ).length;
+              return occurrences > 1;
+            });
+            if (duplicates.length > 0) {
+              return `Duplicate skills found: ${duplicates.join(", ")}`;
+            }
+            return true;
+          }) satisfies Validate<string[], Resume, NonNullable<Resume["skillSections"]>[number]>,
+        },
+      ],
+    },
     {
       name: "experience",
       type: "array",

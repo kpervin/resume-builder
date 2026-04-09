@@ -157,14 +157,18 @@ export interface Resume {
   id: number;
   applicant: number | Applicant;
   description: string;
-  skills?:
+  /**
+   * List of skill categories and associated skills
+   */
+  skillSections?:
     | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
+        category: string;
+        /**
+         * Add skills relevant to this category
+         */
+        skills: string[];
+        id?: string | null;
+      }[]
     | null;
   experience?:
     | {
@@ -358,7 +362,13 @@ export interface AddressSelect<T extends boolean = true> {
 export interface ResumesSelect<T extends boolean = true> {
   applicant?: T;
   description?: T;
-  skills?: T;
+  skillSections?:
+    | T
+    | {
+        category?: T;
+        skills?: T;
+        id?: T;
+      };
   experience?:
     | T
     | {

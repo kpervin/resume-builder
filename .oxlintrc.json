@@ -19,12 +19,6 @@
         "destructuredArrayIgnorePattern": "^_",
         "caughtErrorsIgnorePattern": "^(_|ignore)"
       }
-    ],
-    "eslint/no-unused-vars": [
-      "warn",
-      {
-        "fix": { "imports": "safe-fix", "variables": "suggestion" }
-      }
     ]
   },
   "ignorePatterns": [".next/"]
