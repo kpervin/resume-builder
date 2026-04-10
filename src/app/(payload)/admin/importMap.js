@@ -1,4 +1,5 @@
-import { default as default_1c5b91fa49c999e59e5350c8e01471b2 } from '../../../fields/AddressField/AddressAutocompleteField.tsx'
+import { default as default_46bf42cc7dbb455ba64eaad6e83b94d5 } from '../../../fields/LocationField/LocationAutocompleteField.tsx'
+import { default as default_ded0d7cfffc97b355d855f5ab217a1d7 } from '../../../components/TransparentGroup.tsx'
 import { default as default_13e222f2c21cd5a5e4f1e5e0c788543d } from '../../../fields/PhoneField/PhoneField.tsx'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -26,7 +27,8 @@ import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 export const importMap = {
-  "/fields/AddressField/AddressAutocompleteField.tsx#default": default_1c5b91fa49c999e59e5350c8e01471b2,
+  "/fields/LocationField/LocationAutocompleteField.tsx#default": default_46bf42cc7dbb455ba64eaad6e83b94d5,
+  "/components/TransparentGroup.tsx#default": default_ded0d7cfffc97b355d855f5ab217a1d7,
   "/fields/PhoneField/PhoneField.tsx#default": default_13e222f2c21cd5a5e4f1e5e0c788543d,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,

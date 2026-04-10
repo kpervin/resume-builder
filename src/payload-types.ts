@@ -132,17 +132,17 @@ export interface Applicant {
     firstName?: string | null;
     lastName?: string | null;
   };
-  address?: Address;
+  location: Location;
   phone?: string | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Address".
+ * via the `definition` "Location".
  */
-export interface Address {
-  autocomplete?: string | null;
+export interface Location {
+  fullAddress: string;
   street?: string | null;
   city?: string | null;
   state?: string | null;
@@ -192,6 +192,7 @@ export interface Resume {
         startDate: string;
         current?: boolean | null;
         endDate?: string | null;
+        location: Location;
         id?: string | null;
       }[]
     | null;
@@ -338,17 +339,17 @@ export interface ApplicantsSelect<T extends boolean = true> {
         firstName?: T;
         lastName?: T;
       };
-  address?: T | AddressSelect<T>;
+  location?: T | LocationSelect<T>;
   phone?: T;
   updatedAt?: T;
   createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Address_select".
+ * via the `definition` "Location_select".
  */
-export interface AddressSelect<T extends boolean = true> {
-  autocomplete?: T;
+export interface LocationSelect<T extends boolean = true> {
+  fullAddress?: T;
   street?: T;
   city?: T;
   state?: T;
@@ -378,6 +379,7 @@ export interface ResumesSelect<T extends boolean = true> {
         startDate?: T;
         current?: T;
         endDate?: T;
+        location?: T | LocationSelect<T>;
         id?: T;
       };
   updatedAt?: T;
