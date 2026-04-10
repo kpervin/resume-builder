@@ -7,6 +7,7 @@ import { buildConfig } from "payload";
 import sharp from "sharp";
 
 import { ApplicantsCollection } from "@/collections/applicants.collection";
+import { ReferencesCollection } from "@/collections/references.collection";
 import { ResumesCollection } from "@/collections/resumes.collection";
 
 import { MediaCollection } from "./collections/media.collection";
@@ -22,7 +23,13 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [ApplicantsCollection, ResumesCollection, MediaCollection, UsersCollection],
+  collections: [
+    ApplicantsCollection,
+    ResumesCollection,
+    ReferencesCollection,
+    MediaCollection,
+    UsersCollection,
+  ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {
