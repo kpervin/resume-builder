@@ -9,6 +9,7 @@ export const ReferencesCollection = {
   admin: {
     useAsTitle: "name",
   },
+  timestamps: true,
   fields: [
     {
       name: "name",

@@ -12,6 +12,7 @@ export const ResumesCollection = {
   versions: {
     drafts: true,
   },
+  timestamps: true,
   fields: [
     {
       name: "applicant",
