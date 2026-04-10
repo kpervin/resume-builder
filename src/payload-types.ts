@@ -70,6 +70,7 @@ export interface Config {
     applicants: Applicant;
     resumes: Resume;
     references: Reference;
+    'job-applications': JobApplication;
     media: Media;
     users: User;
     'payload-kv': PayloadKv;
@@ -82,6 +83,7 @@ export interface Config {
     applicants: ApplicantsSelect<false> | ApplicantsSelect<true>;
     resumes: ResumesSelect<false> | ResumesSelect<true>;
     references: ReferencesSelect<false> | ReferencesSelect<true>;
+    'job-applications': JobApplicationsSelect<false> | JobApplicationsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -221,6 +223,55 @@ export interface Reference {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "job-applications".
+ */
+export interface JobApplication {
+  id: number;
+  /**
+   * Title of the position being applied for
+   */
+  jobTitle: string;
+  /**
+   * Company applying for the position
+   */
+  company: string;
+  /**
+   * Link to the job posting
+   */
+  jobPostingUrl: string;
+  /**
+   * Resume to submit with this application
+   */
+  resume: number | Resume;
+  /**
+   * Cover letter written for this application
+   */
+  coverLetter: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  applicant: number | Applicant;
+  /**
+   * Timestamp when the application was submitted
+   */
+  submittedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
 export interface Media {
@@ -299,6 +350,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'references';
         value: number | Reference;
+      } | null)
+    | ({
+        relationTo: 'job-applications';
+        value: number | JobApplication;
       } | null)
     | ({
         relationTo: 'media';
@@ -426,6 +481,22 @@ export interface ReferencesSelect<T extends boolean = true> {
       };
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "job-applications_select".
+ */
+export interface JobApplicationsSelect<T extends boolean = true> {
+  jobTitle?: T;
+  company?: T;
+  jobPostingUrl?: T;
+  resume?: T;
+  coverLetter?: T;
+  applicant?: T;
+  submittedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

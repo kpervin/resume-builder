@@ -31,6 +31,14 @@ export const enum_references_contact_methods_type = pgEnum("enum_references_cont
   "phone",
   "email",
 ]);
+export const enum_job_applications_status = pgEnum("enum_job_applications_status", [
+  "draft",
+  "published",
+]);
+export const enum__job_applications_v_version_status = pgEnum(
+  "enum__job_applications_v_version_status",
+  ["draft", "published"],
+);
 
 export const applicants = pgTable(
   "applicants",
@@ -401,6 +409,112 @@ export const references = pgTable(
   ],
 );
 
+export const job_applications = pgTable(
+  "job_applications",
+  {
+    id: serial("id").primaryKey(),
+    jobTitle: varchar("job_title"),
+    company: varchar("company"),
+    jobPostingUrl: varchar("job_posting_url"),
+    resume: integer("resume_id").references(() => resumes.id, {
+      onDelete: "set null",
+    }),
+    coverLetter: jsonb("cover_letter"),
+    applicant: integer("applicant_id").references(() => applicants.id, {
+      onDelete: "set null",
+    }),
+    submittedAt: timestamp("submitted_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    _status: enum_job_applications_status("_status").default("draft"),
+  },
+  (columns) => [
+    index("job_applications_resume_idx").on(columns.resume),
+    index("job_applications_applicant_idx").on(columns.applicant),
+    index("job_applications_updated_at_idx").on(columns.updatedAt),
+    index("job_applications_created_at_idx").on(columns.createdAt),
+    index("job_applications__status_idx").on(columns._status),
+  ],
+);
+
+export const _job_applications_v = pgTable(
+  "_job_applications_v",
+  {
+    id: serial("id").primaryKey(),
+    parent: integer("parent_id").references(() => job_applications.id, {
+      onDelete: "set null",
+    }),
+    version_jobTitle: varchar("version_job_title"),
+    version_company: varchar("version_company"),
+    version_jobPostingUrl: varchar("version_job_posting_url"),
+    version_resume: integer("version_resume_id").references(() => resumes.id, {
+      onDelete: "set null",
+    }),
+    version_coverLetter: jsonb("version_cover_letter"),
+    version_applicant: integer("version_applicant_id").references(() => applicants.id, {
+      onDelete: "set null",
+    }),
+    version_submittedAt: timestamp("version_submitted_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    version_updatedAt: timestamp("version_updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    version_createdAt: timestamp("version_created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    version__status: enum__job_applications_v_version_status("version__status").default("draft"),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    latest: boolean("latest"),
+  },
+  (columns) => [
+    index("_job_applications_v_parent_idx").on(columns.parent),
+    index("_job_applications_v_version_version_resume_idx").on(columns.version_resume),
+    index("_job_applications_v_version_version_applicant_idx").on(columns.version_applicant),
+    index("_job_applications_v_version_version_updated_at_idx").on(columns.version_updatedAt),
+    index("_job_applications_v_version_version_created_at_idx").on(columns.version_createdAt),
+    index("_job_applications_v_version_version__status_idx").on(columns.version__status),
+    index("_job_applications_v_created_at_idx").on(columns.createdAt),
+    index("_job_applications_v_updated_at_idx").on(columns.updatedAt),
+    index("_job_applications_v_latest_idx").on(columns.latest),
+  ],
+);
+
 export const media = pgTable(
   "media",
   {
@@ -554,6 +668,7 @@ export const payload_locked_documents_rels = pgTable(
     applicantsID: integer("applicants_id"),
     resumesID: integer("resumes_id"),
     referencesID: integer("references_id"),
+    "job-applicationsID": integer("job_applications_id"),
     mediaID: integer("media_id"),
     usersID: integer("users_id"),
   },
@@ -564,6 +679,9 @@ export const payload_locked_documents_rels = pgTable(
     index("payload_locked_documents_rels_applicants_id_idx").on(columns.applicantsID),
     index("payload_locked_documents_rels_resumes_id_idx").on(columns.resumesID),
     index("payload_locked_documents_rels_references_id_idx").on(columns.referencesID),
+    index("payload_locked_documents_rels_job_applications_id_idx").on(
+      columns["job-applicationsID"],
+    ),
     index("payload_locked_documents_rels_media_id_idx").on(columns.mediaID),
     index("payload_locked_documents_rels_users_id_idx").on(columns.usersID),
     foreignKey({
@@ -585,6 +703,11 @@ export const payload_locked_documents_rels = pgTable(
       columns: [columns["referencesID"]],
       foreignColumns: [references.id],
       name: "payload_locked_documents_rels_references_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["job-applicationsID"]],
+      foreignColumns: [job_applications.id],
+      name: "payload_locked_documents_rels_job_applications_fk",
     }).onDelete("cascade"),
     foreignKey({
       columns: [columns["mediaID"]],
@@ -812,6 +935,35 @@ export const relations_references = relations(references, ({ many }) => ({
     relationName: "contactMethods",
   }),
 }));
+export const relations_job_applications = relations(job_applications, ({ one }) => ({
+  resume: one(resumes, {
+    fields: [job_applications.resume],
+    references: [resumes.id],
+    relationName: "resume",
+  }),
+  applicant: one(applicants, {
+    fields: [job_applications.applicant],
+    references: [applicants.id],
+    relationName: "applicant",
+  }),
+}));
+export const relations__job_applications_v = relations(_job_applications_v, ({ one }) => ({
+  parent: one(job_applications, {
+    fields: [_job_applications_v.parent],
+    references: [job_applications.id],
+    relationName: "parent",
+  }),
+  version_resume: one(resumes, {
+    fields: [_job_applications_v.version_resume],
+    references: [resumes.id],
+    relationName: "version_resume",
+  }),
+  version_applicant: one(applicants, {
+    fields: [_job_applications_v.version_applicant],
+    references: [applicants.id],
+    relationName: "version_applicant",
+  }),
+}));
 export const relations_media = relations(media, () => ({}));
 export const relations_users_sessions = relations(users_sessions, ({ one }) => ({
   _parentID: one(users, {
@@ -848,6 +1000,11 @@ export const relations_payload_locked_documents_rels = relations(
       fields: [payload_locked_documents_rels.referencesID],
       references: [references.id],
       relationName: "references",
+    }),
+    "job-applicationsID": one(job_applications, {
+      fields: [payload_locked_documents_rels["job-applicationsID"]],
+      references: [job_applications.id],
+      relationName: "job-applications",
     }),
     mediaID: one(media, {
       fields: [payload_locked_documents_rels.mediaID],
@@ -895,6 +1052,8 @@ type DatabaseSchema = {
   enum_resumes_status: typeof enum_resumes_status;
   enum__resumes_v_version_status: typeof enum__resumes_v_version_status;
   enum_references_contact_methods_type: typeof enum_references_contact_methods_type;
+  enum_job_applications_status: typeof enum_job_applications_status;
+  enum__job_applications_v_version_status: typeof enum__job_applications_v_version_status;
   applicants: typeof applicants;
   resumes_skill_sections: typeof resumes_skill_sections;
   resumes_experience: typeof resumes_experience;
@@ -908,6 +1067,8 @@ type DatabaseSchema = {
   _resumes_v_rels: typeof _resumes_v_rels;
   references_contact_methods: typeof references_contact_methods;
   references: typeof references;
+  job_applications: typeof job_applications;
+  _job_applications_v: typeof _job_applications_v;
   media: typeof media;
   users_sessions: typeof users_sessions;
   users: typeof users;
@@ -930,6 +1091,8 @@ type DatabaseSchema = {
   relations__resumes_v: typeof relations__resumes_v;
   relations_references_contact_methods: typeof relations_references_contact_methods;
   relations_references: typeof relations_references;
+  relations_job_applications: typeof relations_job_applications;
+  relations__job_applications_v: typeof relations__job_applications_v;
   relations_media: typeof relations_media;
   relations_users_sessions: typeof relations_users_sessions;
   relations_users: typeof relations_users;

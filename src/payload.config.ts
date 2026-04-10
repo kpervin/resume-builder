@@ -7,6 +7,7 @@ import { buildConfig } from "payload";
 import sharp from "sharp";
 
 import { ApplicantsCollection } from "@/collections/applicants.collection";
+import { JobApplicationsCollection } from "@/collections/job-applications.collection";
 import { ReferencesCollection } from "@/collections/references.collection";
 import { ResumesCollection } from "@/collections/resumes.collection";
 
@@ -27,6 +28,7 @@ export default buildConfig({
     ApplicantsCollection,
     ResumesCollection,
     ReferencesCollection,
+    JobApplicationsCollection,
     MediaCollection,
     UsersCollection,
   ],
