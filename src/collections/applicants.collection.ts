@@ -8,6 +8,7 @@ export const ApplicantsCollection = {
   admin: {
     useAsTitle: "fullName",
   },
+  timestamps: true,
   hooks: {
     beforeValidate: [
       ({ data }) => {

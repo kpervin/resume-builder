@@ -6,27 +6,437 @@
  * and re-run `payload generate:db-schema` to regenerate this file.
  */
 
-import { relations } from "@payloadcms/db-postgres/drizzle";
+import type {} from "@payloadcms/db-postgres";
+import { sql, relations } from "@payloadcms/db-postgres/drizzle";
 import {
-  boolean,
-  foreignKey,
+  pgTable,
   index,
+  uniqueIndex,
+  foreignKey,
+  serial,
+  varchar,
+  timestamp,
   integer,
   jsonb,
+  boolean,
   numeric,
   pgEnum,
-  pgTable,
-  serial,
-  timestamp,
-  uniqueIndex,
-  varchar,
 } from "@payloadcms/db-postgres/drizzle/pg-core";
-
 export const enum_resumes_status = pgEnum("enum_resumes_status", ["draft", "published"]);
 export const enum__resumes_v_version_status = pgEnum("enum__resumes_v_version_status", [
   "draft",
   "published",
 ]);
+export const enum_references_contact_methods_type = pgEnum("enum_references_contact_methods_type", [
+  "phone",
+  "email",
+]);
+
+export const applicants = pgTable(
+  "applicants",
+  {
+    id: serial("id").primaryKey(),
+    fullName: varchar("full_name"),
+    name_firstName: varchar("name_first_name"),
+    name_lastName: varchar("name_last_name"),
+    location_street: varchar("location_street"),
+    location_city: varchar("location_city"),
+    location_state: varchar("location_state"),
+    location_postalCode: varchar("location_postal_code"),
+    location_country: varchar("location_country"),
+    phone: varchar("phone"),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+  },
+  (columns) => [
+    index("applicants_updated_at_idx").on(columns.updatedAt),
+    index("applicants_created_at_idx").on(columns.createdAt),
+  ],
+);
+
+export const resumes_skill_sections = pgTable(
+  "resumes_skill_sections",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    category: varchar("category"),
+  },
+  (columns) => [
+    index("resumes_skill_sections_order_idx").on(columns._order),
+    index("resumes_skill_sections_parent_id_idx").on(columns._parentID),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [resumes.id],
+      name: "resumes_skill_sections_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const resumes_experience = pgTable(
+  "resumes_experience",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    jobTitle: varchar("job_title"),
+    company: varchar("company"),
+    description: jsonb("description"),
+    startDate: timestamp("start_date", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    current: boolean("current"),
+    endDate: timestamp("end_date", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    location_street: varchar("location_street"),
+    location_city: varchar("location_city"),
+    location_state: varchar("location_state"),
+    location_postalCode: varchar("location_postal_code"),
+    location_country: varchar("location_country"),
+  },
+  (columns) => [
+    index("resumes_experience_order_idx").on(columns._order),
+    index("resumes_experience_parent_id_idx").on(columns._parentID),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [resumes.id],
+      name: "resumes_experience_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const resumes = pgTable(
+  "resumes",
+  {
+    id: serial("id").primaryKey(),
+    applicant: integer("applicant_id").references(() => applicants.id, {
+      onDelete: "set null",
+    }),
+    description: varchar("description"),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    _status: enum_resumes_status("_status").default("draft"),
+  },
+  (columns) => [
+    index("resumes_applicant_idx").on(columns.applicant),
+    index("resumes_updated_at_idx").on(columns.updatedAt),
+    index("resumes_created_at_idx").on(columns.createdAt),
+    index("resumes__status_idx").on(columns._status),
+  ],
+);
+
+export const resumes_texts = pgTable(
+  "resumes_texts",
+  {
+    id: serial("id").primaryKey(),
+    order: integer("order").notNull(),
+    parent: integer("parent_id").notNull(),
+    path: varchar("path").notNull(),
+    text: varchar("text"),
+  },
+  (columns) => [
+    index("resumes_texts_order_parent").on(columns.order, columns.parent),
+    foreignKey({
+      columns: [columns["parent"]],
+      foreignColumns: [resumes.id],
+      name: "resumes_texts_parent_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const resumes_rels = pgTable(
+  "resumes_rels",
+  {
+    id: serial("id").primaryKey(),
+    order: integer("order"),
+    parent: integer("parent_id").notNull(),
+    path: varchar("path").notNull(),
+    referencesID: integer("references_id"),
+  },
+  (columns) => [
+    index("resumes_rels_order_idx").on(columns.order),
+    index("resumes_rels_parent_idx").on(columns.parent),
+    index("resumes_rels_path_idx").on(columns.path),
+    index("resumes_rels_references_id_idx").on(columns.referencesID),
+    foreignKey({
+      columns: [columns["parent"]],
+      foreignColumns: [resumes.id],
+      name: "resumes_rels_parent_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["referencesID"]],
+      foreignColumns: [references.id],
+      name: "resumes_rels_references_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _resumes_v_version_skill_sections = pgTable(
+  "_resumes_v_version_skill_sections",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: serial("id").primaryKey(),
+    category: varchar("category"),
+    _uuid: varchar("_uuid"),
+  },
+  (columns) => [
+    index("_resumes_v_version_skill_sections_order_idx").on(columns._order),
+    index("_resumes_v_version_skill_sections_parent_id_idx").on(columns._parentID),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_resumes_v.id],
+      name: "_resumes_v_version_skill_sections_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _resumes_v_version_experience = pgTable(
+  "_resumes_v_version_experience",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: serial("id").primaryKey(),
+    jobTitle: varchar("job_title"),
+    company: varchar("company"),
+    description: jsonb("description"),
+    startDate: timestamp("start_date", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    current: boolean("current"),
+    endDate: timestamp("end_date", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    location_street: varchar("location_street"),
+    location_city: varchar("location_city"),
+    location_state: varchar("location_state"),
+    location_postalCode: varchar("location_postal_code"),
+    location_country: varchar("location_country"),
+    _uuid: varchar("_uuid"),
+  },
+  (columns) => [
+    index("_resumes_v_version_experience_order_idx").on(columns._order),
+    index("_resumes_v_version_experience_parent_id_idx").on(columns._parentID),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [_resumes_v.id],
+      name: "_resumes_v_version_experience_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _resumes_v = pgTable(
+  "_resumes_v",
+  {
+    id: serial("id").primaryKey(),
+    parent: integer("parent_id").references(() => resumes.id, {
+      onDelete: "set null",
+    }),
+    version_applicant: integer("version_applicant_id").references(() => applicants.id, {
+      onDelete: "set null",
+    }),
+    version_description: varchar("version_description"),
+    version_updatedAt: timestamp("version_updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    version_createdAt: timestamp("version_created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    }),
+    version__status: enum__resumes_v_version_status("version__status").default("draft"),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    latest: boolean("latest"),
+  },
+  (columns) => [
+    index("_resumes_v_parent_idx").on(columns.parent),
+    index("_resumes_v_version_version_applicant_idx").on(columns.version_applicant),
+    index("_resumes_v_version_version_updated_at_idx").on(columns.version_updatedAt),
+    index("_resumes_v_version_version_created_at_idx").on(columns.version_createdAt),
+    index("_resumes_v_version_version__status_idx").on(columns.version__status),
+    index("_resumes_v_created_at_idx").on(columns.createdAt),
+    index("_resumes_v_updated_at_idx").on(columns.updatedAt),
+    index("_resumes_v_latest_idx").on(columns.latest),
+  ],
+);
+
+export const _resumes_v_texts = pgTable(
+  "_resumes_v_texts",
+  {
+    id: serial("id").primaryKey(),
+    order: integer("order").notNull(),
+    parent: integer("parent_id").notNull(),
+    path: varchar("path").notNull(),
+    text: varchar("text"),
+  },
+  (columns) => [
+    index("_resumes_v_texts_order_parent").on(columns.order, columns.parent),
+    foreignKey({
+      columns: [columns["parent"]],
+      foreignColumns: [_resumes_v.id],
+      name: "_resumes_v_texts_parent_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const _resumes_v_rels = pgTable(
+  "_resumes_v_rels",
+  {
+    id: serial("id").primaryKey(),
+    order: integer("order"),
+    parent: integer("parent_id").notNull(),
+    path: varchar("path").notNull(),
+    referencesID: integer("references_id"),
+  },
+  (columns) => [
+    index("_resumes_v_rels_order_idx").on(columns.order),
+    index("_resumes_v_rels_parent_idx").on(columns.parent),
+    index("_resumes_v_rels_path_idx").on(columns.path),
+    index("_resumes_v_rels_references_id_idx").on(columns.referencesID),
+    foreignKey({
+      columns: [columns["parent"]],
+      foreignColumns: [_resumes_v.id],
+      name: "_resumes_v_rels_parent_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["referencesID"]],
+      foreignColumns: [references.id],
+      name: "_resumes_v_rels_references_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const references_contact_methods = pgTable(
+  "references_contact_methods",
+  {
+    _order: integer("_order").notNull(),
+    _parentID: integer("_parent_id").notNull(),
+    id: varchar("id").primaryKey(),
+    type: enum_references_contact_methods_type("type"),
+    email: varchar("email"),
+  },
+  (columns) => [
+    index("references_contact_methods_order_idx").on(columns._order),
+    index("references_contact_methods_parent_id_idx").on(columns._parentID),
+    foreignKey({
+      columns: [columns["_parentID"]],
+      foreignColumns: [references.id],
+      name: "references_contact_methods_parent_id_fk",
+    }).onDelete("cascade"),
+  ],
+);
+
+export const references = pgTable(
+  "references",
+  {
+    id: serial("id").primaryKey(),
+    name: varchar("name").notNull(),
+    company: varchar("company"),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+  },
+  (columns) => [
+    index("references_updated_at_idx").on(columns.updatedAt),
+    index("references_created_at_idx").on(columns.createdAt),
+  ],
+);
+
+export const media = pgTable(
+  "media",
+  {
+    id: serial("id").primaryKey(),
+    alt: varchar("alt").notNull(),
+    caption: varchar("caption"),
+    updatedAt: timestamp("updated_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp("created_at", {
+      mode: "string",
+      withTimezone: true,
+      precision: 3,
+    })
+      .defaultNow()
+      .notNull(),
+    url: varchar("url"),
+    thumbnailURL: varchar("thumbnail_u_r_l"),
+    filename: varchar("filename"),
+    mimeType: varchar("mime_type"),
+    filesize: numeric("filesize", { mode: "number" }),
+    width: numeric("width", { mode: "number" }),
+    height: numeric("height", { mode: "number" }),
+    focalX: numeric("focal_x", { mode: "number" }),
+    focalY: numeric("focal_y", { mode: "number" }),
+  },
+  (columns) => [
+    index("media_updated_at_idx").on(columns.updatedAt),
+    index("media_created_at_idx").on(columns.createdAt),
+    uniqueIndex("media_filename_idx").on(columns.filename),
+  ],
+);
 
 export const users_sessions = pgTable(
   "users_sessions",
@@ -97,225 +507,6 @@ export const users = pgTable(
   ],
 );
 
-export const media = pgTable(
-  "media",
-  {
-    id: serial("id").primaryKey(),
-    alt: varchar("alt").notNull(),
-    caption: varchar("caption"),
-    updatedAt: timestamp("updated_at", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    })
-      .defaultNow()
-      .notNull(),
-    createdAt: timestamp("created_at", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    })
-      .defaultNow()
-      .notNull(),
-    url: varchar("url"),
-    thumbnailURL: varchar("thumbnail_u_r_l"),
-    filename: varchar("filename"),
-    mimeType: varchar("mime_type"),
-    filesize: numeric("filesize", { mode: "number" }),
-    width: numeric("width", { mode: "number" }),
-    height: numeric("height", { mode: "number" }),
-    focalX: numeric("focal_x", { mode: "number" }),
-    focalY: numeric("focal_y", { mode: "number" }),
-  },
-  (columns) => [
-    index("media_updated_at_idx").on(columns.updatedAt),
-    index("media_created_at_idx").on(columns.createdAt),
-    uniqueIndex("media_filename_idx").on(columns.filename),
-  ],
-);
-
-export const resumes_experience = pgTable(
-  "resumes_experience",
-  {
-    _order: integer("_order").notNull(),
-    _parentID: integer("_parent_id").notNull(),
-    id: varchar("id").primaryKey(),
-    jobTitle: varchar("job_title"),
-    company: varchar("company"),
-    description: jsonb("description"),
-    startDate: timestamp("start_date", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    }),
-    current: boolean("current"),
-    endDate: timestamp("end_date", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    }),
-  },
-  (columns) => [
-    index("resumes_experience_order_idx").on(columns._order),
-    index("resumes_experience_parent_id_idx").on(columns._parentID),
-    foreignKey({
-      columns: [columns["_parentID"]],
-      foreignColumns: [resumes.id],
-      name: "resumes_experience_parent_id_fk",
-    }).onDelete("cascade"),
-  ],
-);
-
-export const resumes = pgTable(
-  "resumes",
-  {
-    id: serial("id").primaryKey(),
-    user: integer("user_id").references(() => users.id, {
-      onDelete: "set null",
-    }),
-    description: varchar("description"),
-    skills: jsonb("skills"),
-    updatedAt: timestamp("updated_at", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    })
-      .defaultNow()
-      .notNull(),
-    createdAt: timestamp("created_at", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    })
-      .defaultNow()
-      .notNull(),
-    _status: enum_resumes_status("_status").default("draft"),
-  },
-  (columns) => [
-    index("resumes_user_idx").on(columns.user),
-    index("resumes_updated_at_idx").on(columns.updatedAt),
-    index("resumes_created_at_idx").on(columns.createdAt),
-    index("resumes__status_idx").on(columns._status),
-  ],
-);
-
-export const _resumes_v_version_experience = pgTable(
-  "_resumes_v_version_experience",
-  {
-    _order: integer("_order").notNull(),
-    _parentID: integer("_parent_id").notNull(),
-    id: serial("id").primaryKey(),
-    jobTitle: varchar("job_title"),
-    company: varchar("company"),
-    description: jsonb("description"),
-    startDate: timestamp("start_date", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    }),
-    current: boolean("current"),
-    endDate: timestamp("end_date", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    }),
-    _uuid: varchar("_uuid"),
-  },
-  (columns) => [
-    index("_resumes_v_version_experience_order_idx").on(columns._order),
-    index("_resumes_v_version_experience_parent_id_idx").on(columns._parentID),
-    foreignKey({
-      columns: [columns["_parentID"]],
-      foreignColumns: [_resumes_v.id],
-      name: "_resumes_v_version_experience_parent_id_fk",
-    }).onDelete("cascade"),
-  ],
-);
-
-export const _resumes_v = pgTable(
-  "_resumes_v",
-  {
-    id: serial("id").primaryKey(),
-    parent: integer("parent_id").references(() => resumes.id, {
-      onDelete: "set null",
-    }),
-    version_user: integer("version_user_id").references(() => users.id, {
-      onDelete: "set null",
-    }),
-    version_description: varchar("version_description"),
-    version_skills: jsonb("version_skills"),
-    version_updatedAt: timestamp("version_updated_at", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    }),
-    version_createdAt: timestamp("version_created_at", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    }),
-    version__status: enum__resumes_v_version_status("version__status").default("draft"),
-    createdAt: timestamp("created_at", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    })
-      .defaultNow()
-      .notNull(),
-    updatedAt: timestamp("updated_at", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    })
-      .defaultNow()
-      .notNull(),
-    latest: boolean("latest"),
-  },
-  (columns) => [
-    index("_resumes_v_parent_idx").on(columns.parent),
-    index("_resumes_v_version_version_user_idx").on(columns.version_user),
-    index("_resumes_v_version_version_updated_at_idx").on(columns.version_updatedAt),
-    index("_resumes_v_version_version_created_at_idx").on(columns.version_createdAt),
-    index("_resumes_v_version_version__status_idx").on(columns.version__status),
-    index("_resumes_v_created_at_idx").on(columns.createdAt),
-    index("_resumes_v_updated_at_idx").on(columns.updatedAt),
-    index("_resumes_v_latest_idx").on(columns.latest),
-  ],
-);
-
-export const applicants = pgTable(
-  "applicants",
-  {
-    id: serial("id").primaryKey(),
-    name_firstName: varchar("name_first_name"),
-    name_lastName: varchar("name_last_name"),
-    address_street: varchar("address_street"),
-    address_city: varchar("address_city"),
-    address_state: varchar("address_state"),
-    address_postalCode: varchar("address_postal_code"),
-    address_country: varchar("address_country"),
-    phone: varchar("phone"),
-    updatedAt: timestamp("updated_at", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    })
-      .defaultNow()
-      .notNull(),
-    createdAt: timestamp("created_at", {
-      mode: "string",
-      withTimezone: true,
-      precision: 3,
-    })
-      .defaultNow()
-      .notNull(),
-  },
-  (columns) => [
-    index("applicants_updated_at_idx").on(columns.updatedAt),
-    index("applicants_created_at_idx").on(columns.createdAt),
-  ],
-);
-
 export const payload_kv = pgTable(
   "payload_kv",
   {
@@ -360,33 +551,30 @@ export const payload_locked_documents_rels = pgTable(
     order: integer("order"),
     parent: integer("parent_id").notNull(),
     path: varchar("path").notNull(),
-    usersID: integer("users_id"),
-    mediaID: integer("media_id"),
-    resumesID: integer("resumes_id"),
     applicantsID: integer("applicants_id"),
+    resumesID: integer("resumes_id"),
+    referencesID: integer("references_id"),
+    mediaID: integer("media_id"),
+    usersID: integer("users_id"),
   },
   (columns) => [
     index("payload_locked_documents_rels_order_idx").on(columns.order),
     index("payload_locked_documents_rels_parent_idx").on(columns.parent),
     index("payload_locked_documents_rels_path_idx").on(columns.path),
-    index("payload_locked_documents_rels_users_id_idx").on(columns.usersID),
-    index("payload_locked_documents_rels_media_id_idx").on(columns.mediaID),
-    index("payload_locked_documents_rels_resumes_id_idx").on(columns.resumesID),
     index("payload_locked_documents_rels_applicants_id_idx").on(columns.applicantsID),
+    index("payload_locked_documents_rels_resumes_id_idx").on(columns.resumesID),
+    index("payload_locked_documents_rels_references_id_idx").on(columns.referencesID),
+    index("payload_locked_documents_rels_media_id_idx").on(columns.mediaID),
+    index("payload_locked_documents_rels_users_id_idx").on(columns.usersID),
     foreignKey({
       columns: [columns["parent"]],
       foreignColumns: [payload_locked_documents.id],
       name: "payload_locked_documents_rels_parent_fk",
     }).onDelete("cascade"),
     foreignKey({
-      columns: [columns["usersID"]],
-      foreignColumns: [users.id],
-      name: "payload_locked_documents_rels_users_fk",
-    }).onDelete("cascade"),
-    foreignKey({
-      columns: [columns["mediaID"]],
-      foreignColumns: [media.id],
-      name: "payload_locked_documents_rels_media_fk",
+      columns: [columns["applicantsID"]],
+      foreignColumns: [applicants.id],
+      name: "payload_locked_documents_rels_applicants_fk",
     }).onDelete("cascade"),
     foreignKey({
       columns: [columns["resumesID"]],
@@ -394,9 +582,19 @@ export const payload_locked_documents_rels = pgTable(
       name: "payload_locked_documents_rels_resumes_fk",
     }).onDelete("cascade"),
     foreignKey({
-      columns: [columns["applicantsID"]],
-      foreignColumns: [applicants.id],
-      name: "payload_locked_documents_rels_applicants_fk",
+      columns: [columns["referencesID"]],
+      foreignColumns: [references.id],
+      name: "payload_locked_documents_rels_references_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["mediaID"]],
+      foreignColumns: [media.id],
+      name: "payload_locked_documents_rels_media_fk",
+    }).onDelete("cascade"),
+    foreignKey({
+      columns: [columns["usersID"]],
+      foreignColumns: [users.id],
+      name: "payload_locked_documents_rels_users_fk",
     }).onDelete("cascade"),
   ],
 );
@@ -483,6 +681,138 @@ export const payload_migrations = pgTable(
   ],
 );
 
+export const relations_applicants = relations(applicants, () => ({}));
+export const relations_resumes_skill_sections = relations(resumes_skill_sections, ({ one }) => ({
+  _parentID: one(resumes, {
+    fields: [resumes_skill_sections._parentID],
+    references: [resumes.id],
+    relationName: "skillSections",
+  }),
+}));
+export const relations_resumes_experience = relations(resumes_experience, ({ one }) => ({
+  _parentID: one(resumes, {
+    fields: [resumes_experience._parentID],
+    references: [resumes.id],
+    relationName: "experience",
+  }),
+}));
+export const relations_resumes_texts = relations(resumes_texts, ({ one }) => ({
+  parent: one(resumes, {
+    fields: [resumes_texts.parent],
+    references: [resumes.id],
+    relationName: "_texts",
+  }),
+}));
+export const relations_resumes_rels = relations(resumes_rels, ({ one }) => ({
+  parent: one(resumes, {
+    fields: [resumes_rels.parent],
+    references: [resumes.id],
+    relationName: "_rels",
+  }),
+  referencesID: one(references, {
+    fields: [resumes_rels.referencesID],
+    references: [references.id],
+    relationName: "references",
+  }),
+}));
+export const relations_resumes = relations(resumes, ({ one, many }) => ({
+  applicant: one(applicants, {
+    fields: [resumes.applicant],
+    references: [applicants.id],
+    relationName: "applicant",
+  }),
+  skillSections: many(resumes_skill_sections, {
+    relationName: "skillSections",
+  }),
+  experience: many(resumes_experience, {
+    relationName: "experience",
+  }),
+  _texts: many(resumes_texts, {
+    relationName: "_texts",
+  }),
+  _rels: many(resumes_rels, {
+    relationName: "_rels",
+  }),
+}));
+export const relations__resumes_v_version_skill_sections = relations(
+  _resumes_v_version_skill_sections,
+  ({ one }) => ({
+    _parentID: one(_resumes_v, {
+      fields: [_resumes_v_version_skill_sections._parentID],
+      references: [_resumes_v.id],
+      relationName: "version_skillSections",
+    }),
+  }),
+);
+export const relations__resumes_v_version_experience = relations(
+  _resumes_v_version_experience,
+  ({ one }) => ({
+    _parentID: one(_resumes_v, {
+      fields: [_resumes_v_version_experience._parentID],
+      references: [_resumes_v.id],
+      relationName: "version_experience",
+    }),
+  }),
+);
+export const relations__resumes_v_texts = relations(_resumes_v_texts, ({ one }) => ({
+  parent: one(_resumes_v, {
+    fields: [_resumes_v_texts.parent],
+    references: [_resumes_v.id],
+    relationName: "_texts",
+  }),
+}));
+export const relations__resumes_v_rels = relations(_resumes_v_rels, ({ one }) => ({
+  parent: one(_resumes_v, {
+    fields: [_resumes_v_rels.parent],
+    references: [_resumes_v.id],
+    relationName: "_rels",
+  }),
+  referencesID: one(references, {
+    fields: [_resumes_v_rels.referencesID],
+    references: [references.id],
+    relationName: "references",
+  }),
+}));
+export const relations__resumes_v = relations(_resumes_v, ({ one, many }) => ({
+  parent: one(resumes, {
+    fields: [_resumes_v.parent],
+    references: [resumes.id],
+    relationName: "parent",
+  }),
+  version_applicant: one(applicants, {
+    fields: [_resumes_v.version_applicant],
+    references: [applicants.id],
+    relationName: "version_applicant",
+  }),
+  version_skillSections: many(_resumes_v_version_skill_sections, {
+    relationName: "version_skillSections",
+  }),
+  version_experience: many(_resumes_v_version_experience, {
+    relationName: "version_experience",
+  }),
+  _texts: many(_resumes_v_texts, {
+    relationName: "_texts",
+  }),
+  _rels: many(_resumes_v_rels, {
+    relationName: "_rels",
+  }),
+}));
+export const relations_references_contact_methods = relations(
+  references_contact_methods,
+  ({ one }) => ({
+    _parentID: one(references, {
+      fields: [references_contact_methods._parentID],
+      references: [references.id],
+      relationName: "contactMethods",
+    }),
+  }),
+);
+export const relations_references = relations(references, ({ many }) => ({
+  contactMethods: many(references_contact_methods, {
+    relationName: "contactMethods",
+  }),
+}));
+export const relations_media = relations(media, () => ({}));
 export const relations_users_sessions = relations(users_sessions, ({ one }) => ({
   _parentID: one(users, {
     fields: [users_sessions._parentID],
@@ -495,50 +825,6 @@ export const relations_users = relations(users, ({ many }) => ({
     relationName: "sessions",
   }),
 }));
-export const relations_media = relations(media, () => ({}));
-export const relations_resumes_experience = relations(resumes_experience, ({ one }) => ({
-  _parentID: one(resumes, {
-    fields: [resumes_experience._parentID],
-    references: [resumes.id],
-    relationName: "experience",
-  }),
-}));
-export const relations_resumes = relations(resumes, ({ one, many }) => ({
-  user: one(users, {
-    fields: [resumes.user],
-    references: [users.id],
-    relationName: "user",
-  }),
-  experience: many(resumes_experience, {
-    relationName: "experience",
-  }),
-}));
-export const relations__resumes_v_version_experience = relations(
-  _resumes_v_version_experience,
-  ({ one }) => ({
-    _parentID: one(_resumes_v, {
-      fields: [_resumes_v_version_experience._parentID],
-      references: [_resumes_v.id],
-      relationName: "version_experience",
-    }),
-  }),
-);
-export const relations__resumes_v = relations(_resumes_v, ({ one, many }) => ({
-  parent: one(resumes, {
-    fields: [_resumes_v.parent],
-    references: [resumes.id],
-    relationName: "parent",
-  }),
-  version_user: one(users, {
-    fields: [_resumes_v.version_user],
-    references: [users.id],
-    relationName: "version_user",
-  }),
-  version_experience: many(_resumes_v_version_experience, {
-    relationName: "version_experience",
-  }),
-}));
-export const relations_applicants = relations(applicants, () => ({}));
 export const relations_payload_kv = relations(payload_kv, () => ({}));
 export const relations_payload_locked_documents_rels = relations(
   payload_locked_documents_rels,
@@ -548,25 +834,30 @@ export const relations_payload_locked_documents_rels = relations(
       references: [payload_locked_documents.id],
       relationName: "_rels",
     }),
-    usersID: one(users, {
-      fields: [payload_locked_documents_rels.usersID],
-      references: [users.id],
-      relationName: "users",
-    }),
-    mediaID: one(media, {
-      fields: [payload_locked_documents_rels.mediaID],
-      references: [media.id],
-      relationName: "media",
+    applicantsID: one(applicants, {
+      fields: [payload_locked_documents_rels.applicantsID],
+      references: [applicants.id],
+      relationName: "applicants",
     }),
     resumesID: one(resumes, {
       fields: [payload_locked_documents_rels.resumesID],
       references: [resumes.id],
       relationName: "resumes",
     }),
-    applicantsID: one(applicants, {
-      fields: [payload_locked_documents_rels.applicantsID],
-      references: [applicants.id],
-      relationName: "applicants",
+    referencesID: one(references, {
+      fields: [payload_locked_documents_rels.referencesID],
+      references: [references.id],
+      relationName: "references",
+    }),
+    mediaID: one(media, {
+      fields: [payload_locked_documents_rels.mediaID],
+      references: [media.id],
+      relationName: "media",
+    }),
+    usersID: one(users, {
+      fields: [payload_locked_documents_rels.usersID],
+      references: [users.id],
+      relationName: "users",
     }),
   }),
 );
@@ -603,28 +894,45 @@ export const relations_payload_migrations = relations(payload_migrations, () => 
 type DatabaseSchema = {
   enum_resumes_status: typeof enum_resumes_status;
   enum__resumes_v_version_status: typeof enum__resumes_v_version_status;
-  users_sessions: typeof users_sessions;
-  users: typeof users;
-  media: typeof media;
+  enum_references_contact_methods_type: typeof enum_references_contact_methods_type;
+  applicants: typeof applicants;
+  resumes_skill_sections: typeof resumes_skill_sections;
   resumes_experience: typeof resumes_experience;
   resumes: typeof resumes;
+  resumes_texts: typeof resumes_texts;
+  resumes_rels: typeof resumes_rels;
+  _resumes_v_version_skill_sections: typeof _resumes_v_version_skill_sections;
   _resumes_v_version_experience: typeof _resumes_v_version_experience;
   _resumes_v: typeof _resumes_v;
-  applicants: typeof applicants;
+  _resumes_v_texts: typeof _resumes_v_texts;
+  _resumes_v_rels: typeof _resumes_v_rels;
+  references_contact_methods: typeof references_contact_methods;
+  references: typeof references;
+  media: typeof media;
+  users_sessions: typeof users_sessions;
+  users: typeof users;
   payload_kv: typeof payload_kv;
   payload_locked_documents: typeof payload_locked_documents;
   payload_locked_documents_rels: typeof payload_locked_documents_rels;
   payload_preferences: typeof payload_preferences;
   payload_preferences_rels: typeof payload_preferences_rels;
   payload_migrations: typeof payload_migrations;
+  relations_applicants: typeof relations_applicants;
+  relations_resumes_skill_sections: typeof relations_resumes_skill_sections;
+  relations_resumes_experience: typeof relations_resumes_experience;
+  relations_resumes_texts: typeof relations_resumes_texts;
+  relations_resumes_rels: typeof relations_resumes_rels;
+  relations_resumes: typeof relations_resumes;
+  relations__resumes_v_version_skill_sections: typeof relations__resumes_v_version_skill_sections;
+  relations__resumes_v_version_experience: typeof relations__resumes_v_version_experience;
+  relations__resumes_v_texts: typeof relations__resumes_v_texts;
+  relations__resumes_v_rels: typeof relations__resumes_v_rels;
+  relations__resumes_v: typeof relations__resumes_v;
+  relations_references_contact_methods: typeof relations_references_contact_methods;
+  relations_references: typeof relations_references;
+  relations_media: typeof relations_media;
   relations_users_sessions: typeof relations_users_sessions;
   relations_users: typeof relations_users;
-  relations_media: typeof relations_media;
-  relations_resumes_experience: typeof relations_resumes_experience;
-  relations_resumes: typeof relations_resumes;
-  relations__resumes_v_version_experience: typeof relations__resumes_v_version_experience;
-  relations__resumes_v: typeof relations__resumes_v;
-  relations_applicants: typeof relations_applicants;
   relations_payload_kv: typeof relations_payload_kv;
   relations_payload_locked_documents_rels: typeof relations_payload_locked_documents_rels;
   relations_payload_locked_documents: typeof relations_payload_locked_documents;

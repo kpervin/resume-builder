@@ -5,6 +5,7 @@ export const MediaCollection = {
   access: {
     read: () => true,
   },
+  timestamps: true,
   fields: [
     {
       name: "alt",

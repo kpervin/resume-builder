@@ -7,4 +7,5 @@ export const UsersCollection = {
   },
   auth: true,
   fields: [],
+  timestamps: true,
 } as const satisfies CollectionConfig<"users">;
