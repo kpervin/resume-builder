@@ -1,6 +1,6 @@
 "use client";
 
-import { TextInput, type TextInputProps } from "@payloadcms/ui";
+import { FieldLabel, TextInput, type TextInputProps } from "@payloadcms/ui";
 import React, { type ChangeEvent, useRef, useState } from "react";
 
 import styles from "./Autocomplete.module.scss";
@@ -11,7 +11,6 @@ type AutocompleteProps<T> = Omit<TextInputProps, "htmlAttributes" | "onChange"> 
   onSelect: (item: T) => void;
   value: string;
   onChange: (newValue: string) => void;
-  label?: React.ReactNode;
   placeholder?: string;
   debounceMs?: number;
   /** Forwarded to TextInput's htmlAttributes.autoComplete */
@@ -80,7 +79,7 @@ export function Autocomplete<T>({
 
   return (
     <div className={styles.wrapper}>
-      <label className="field-label">{label}</label>
+      <FieldLabel path={path} label={label} required={props.required} />
       <div className={styles.textInput}>
         <TextInput
           {...props}

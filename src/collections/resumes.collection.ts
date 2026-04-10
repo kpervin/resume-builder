@@ -1,5 +1,6 @@
 import { CollectionConfig, Condition, FieldHook, Validate } from "payload";
 
+import { locationField, LocationParsers } from "@/fields/LocationField/location.field";
 import { Resume } from "@/payload-types";
 import { toTitleCase } from "@/utils/fns";
 
@@ -111,6 +112,9 @@ export const ResumesCollection = {
             >,
           },
         },
+        locationField(LocationParsers.city, {
+          required: true,
+        }),
       ],
     },
   ],

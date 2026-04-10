@@ -1,6 +1,6 @@
 import { CollectionBeforeValidateHook, CollectionConfig, FieldHook } from "payload";
 
-import { addressField } from "@/fields/AddressField/address.field";
+import { locationField, LocationParsers } from "@/fields/LocationField/location.field";
 import { Applicant } from "@/payload-types";
 
 export const ApplicantsCollection = {
@@ -42,7 +42,10 @@ export const ApplicantsCollection = {
         { name: "lastName", type: "text" },
       ],
     },
-    addressField,
+    locationField(LocationParsers.address, {
+      label: "Current Address",
+      required: true,
+    }),
     {
       name: "phone",
       type: "text",
