@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     applicants: Applicant;
     resumes: Resume;
+    references: Reference;
     media: Media;
     users: User;
     'payload-kv': PayloadKv;
@@ -80,6 +81,7 @@ export interface Config {
   collectionsSelect: {
     applicants: ApplicantsSelect<false> | ApplicantsSelect<true>;
     resumes: ResumesSelect<false> | ResumesSelect<true>;
+    references: ReferencesSelect<false> | ReferencesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -196,9 +198,26 @@ export interface Resume {
         id?: string | null;
       }[]
     | null;
+  references?: (number | Reference)[] | null;
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "references".
+ */
+export interface Reference {
+  id: number;
+  name: string;
+  company?: string | null;
+  contactMethods: {
+    type?: ('phone' | 'email') | null;
+    email?: string | null;
+    id?: string | null;
+  }[];
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -276,6 +295,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'resumes';
         value: number | Resume;
+      } | null)
+    | ({
+        relationTo: 'references';
+        value: number | Reference;
       } | null)
     | ({
         relationTo: 'media';
@@ -382,9 +405,27 @@ export interface ResumesSelect<T extends boolean = true> {
         location?: T | LocationSelect<T>;
         id?: T;
       };
+  references?: T;
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "references_select".
+ */
+export interface ReferencesSelect<T extends boolean = true> {
+  name?: T;
+  company?: T;
+  contactMethods?:
+    | T
+    | {
+        type?: T;
+        email?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

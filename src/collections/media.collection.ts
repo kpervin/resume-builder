@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 
-export const MediaCollection: CollectionConfig = {
+export const MediaCollection = {
   slug: "media",
   access: {
     read: () => true,
@@ -17,4 +17,4 @@ export const MediaCollection: CollectionConfig = {
     },
   ],
   upload: true,
-};
+} as const satisfies CollectionConfig<"media">;

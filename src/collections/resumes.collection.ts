@@ -1,5 +1,6 @@
 import { CollectionConfig, Condition, FieldHook, Validate } from "payload";
 
+import { ReferencesCollection } from "@/collections/references.collection";
 import { locationField, LocationParsers } from "@/fields/LocationField/location.field";
 import { Resume } from "@/payload-types";
 import { toTitleCase } from "@/utils/fns";
@@ -117,5 +118,11 @@ export const ResumesCollection = {
         }),
       ],
     },
+    {
+      name: "references",
+      type: "relationship",
+      relationTo: ReferencesCollection.slug,
+      hasMany: true,
+    },
   ],
-} satisfies CollectionConfig<"resumes">;
+} as const satisfies CollectionConfig<"resumes">;
