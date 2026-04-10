@@ -10,6 +10,7 @@ const TransparentGroup: GroupFieldClientComponent = ({
   schemaPath,
   permissions,
   readOnly,
+  indexPath,
 }) => {
   return (
     <RenderFields
@@ -18,8 +19,7 @@ const TransparentGroup: GroupFieldClientComponent = ({
       parentSchemaPath={schemaPath ?? ""}
       permissions={permissions ?? {}}
       readOnly={readOnly}
-      parentIndexPath=""
-      margins={false}
+      parentIndexPath={indexPath ?? ""}
     />
   );
 };
