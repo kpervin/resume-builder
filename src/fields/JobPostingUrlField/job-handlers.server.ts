@@ -43,7 +43,7 @@ const IndeedHandler = {
   },
 
   normalize(url) {
-    const jk = url.searchParams.get("jk") || url.searchParams.get("vjs");
+    const jk = url.searchParams.get("jk") || url.searchParams.get("vjk");
 
     const hostname = url.hostname;
 
