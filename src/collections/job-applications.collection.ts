@@ -1,6 +1,5 @@
-import { CollectionConfig } from "payload";
-
-import { jobPostingUrlField } from "@/fields/JobPostingUrlField/job-posting-url.field";
+import { CollectionConfig, Validate } from "payload";
+import * as v from "valibot";
 
 export const JobApplicationsCollection = {
   slug: "job-applications",
@@ -28,7 +27,17 @@ export const JobApplicationsCollection = {
         description: "Company applying for the position",
       },
     },
-    jobPostingUrlField,
+    {
+      name: "jobPostingUrl",
+      type: "text",
+      required: true,
+      admin: {
+        description: "Link to the job posting",
+      },
+      validate: ((value) => {
+        return v.is(v.pipe(v.string(), v.url()), value) ? true : "Please enter a valid URL";
+      }) satisfies Validate<string>,
+    },
     {
       name: "resume",
       type: "relationship",
@@ -60,6 +69,16 @@ export const JobApplicationsCollection = {
       type: "date",
       admin: {
         description: "Timestamp when the application was submitted",
+        position: "sidebar",
+      },
+    },
+    {
+      name: "fetchMetadata",
+      type: "ui",
+      admin: {
+        components: {
+          Field: "/components/buttons/FetchMetadataButton.tsx",
+        },
         position: "sidebar",
       },
     },
