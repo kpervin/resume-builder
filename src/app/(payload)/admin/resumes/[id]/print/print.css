@@ -1,0 +1,111 @@
+@page {
+  size: Letter;
+  margin: 18mm 18mm 18mm 18mm;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  color: #111;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    Helvetica,
+    Arial;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.page {
+  width: 100%;
+}
+
+.name {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0 0 6px 0;
+}
+
+.contactLine {
+  margin: 0;
+  color: #555;
+}
+
+.sectionTitle {
+  margin: 14px 0 6px 0;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.summary {
+  margin: 0;
+}
+
+.skillRow {
+  margin: 0 0 2px 0;
+}
+
+.skillCategory {
+  font-weight: 700;
+  margin-right: 8px;
+}
+
+.experienceItem {
+  margin: 0 0 10px 0;
+}
+
+.experienceMeta {
+  display: flex;
+  justify-content: space-between;
+  color: #555;
+  margin-bottom: 2px;
+}
+
+.experienceTitle {
+  font-weight: 700;
+}
+
+.experienceCompany {
+  margin-bottom: 2px;
+}
+
+.experienceDesc :is(p, ul, ol) {
+  margin: 4px 0;
+}
+
+.experienceDesc ul,
+.experienceDesc ol {
+  padding-left: 18px;
+}
+
+.educationItem {
+  margin: 0 0 8px 0;
+}
+
+.educationRow {
+  display: flex;
+  justify-content: space-between;
+  color: #555;
+}
+
+.educationSchool {
+  color: #111;
+  font-weight: 700;
+}
+
+.refItem {
+  margin: 0 0 8px 0;
+}
+
+.refName {
+  font-weight: 700;
+}
+
+.refCompany,
+.refContact {
+  color: #555;
+}

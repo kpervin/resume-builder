@@ -23,6 +23,7 @@ describe("JobPostingUrlField fetchJobMetadata", async () => {
     } satisfies Location;
 
     applicant = await payload.create({
+      draft: true,
       collection: "applicants",
       data: {
         name: {
@@ -36,6 +37,7 @@ describe("JobPostingUrlField fetchJobMetadata", async () => {
     });
     resume = await payload.create({
       collection: "resumes",
+      draft: true,
       data: {
         applicant: applicant.id,
         description: "Senior Full Stack Developer specializing in React and Node.js.",
