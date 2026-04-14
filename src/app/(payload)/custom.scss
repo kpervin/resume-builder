@@ -57,8 +57,8 @@
   height: 1rem;
   display: inline-block;
   vertical-align: middle;
-  border: 2px solid currentColor; /* Sets the color to match text */
-  border-bottom-color: transparent; /* Makes 1/4 of the circle invisible */
+  border: 2px solid currentColor;
+  border-bottom-color: transparent;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
