@@ -2,8 +2,8 @@ import config from "@payload-config";
 import { getPayload } from "payload";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 
-import { fetchJobMetadata } from "@/fields/JobPostingUrlField/fetch-job-metadata.server";
 import type { Location } from "@/payload-types";
+import { fetchJobMetadata } from "@/server-functions/job-metadata/fetch-job-metadata.server";
 
 describe("JobPostingUrlField fetchJobMetadata", async () => {
   let payload: Awaited<ReturnType<typeof getPayload>>;

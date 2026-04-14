@@ -5,8 +5,8 @@ import { FormField, UIFieldClient } from "payload";
 import { type FC, useTransition } from "react";
 import * as v from "valibot";
 
-import { fetchJobMetadata } from "@/fields/JobPostingUrlField/fetch-job-metadata.server";
 import { JobApplication } from "@/payload-types";
+import { fetchJobMetadata } from "@/server-functions/job-metadata/fetch-job-metadata.server";
 
 const dataSchema = v.object({
   resume: v.number(),
