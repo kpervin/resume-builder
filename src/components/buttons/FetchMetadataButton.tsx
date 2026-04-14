@@ -22,10 +22,9 @@ const FetchMetadataButton: FC<UIFieldClient> = () => {
 
     if (!v.is(dataSchema, formData)) return;
 
-    // Wrapping the logic in startTransition
     startTransition(async () => {
       try {
-        const data = await fetchJobMetadata(formData.jobPostingUrl);
+        const data = await fetchJobMetadata(formData.jobPostingUrl, formData.resume);
 
         if (!data) {
           return dispatchFields({
@@ -42,6 +41,14 @@ const FetchMetadataButton: FC<UIFieldClient> = () => {
             company: { value: data.company },
             jobPostingUrl: { value: data.url },
           } satisfies Partial<{ [key in keyof JobApplication]: FormField }>,
+        });
+
+        dispatchFields({
+          type: "UPDATE",
+          path: "coverLetter",
+          value: data.coverLetterLexical,
+          initialValue: data.coverLetterLexical,
+          valid: true,
         });
       } catch (error) {
         console.error("Failed to fetch metadata", error);

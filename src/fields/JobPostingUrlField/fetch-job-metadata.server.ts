@@ -1,8 +1,16 @@
 "use server";
 
 import { ApiError, GenerateContentResponse, GoogleGenAI } from "@google/genai";
+import config from "@payload-config";
+import {
+  $convertFromMarkdownString,
+  editorConfigFactory,
+  getEnabledNodes,
+} from "@payloadcms/richtext-lexical";
+import { createHeadlessEditor } from "@payloadcms/richtext-lexical/lexical/headless";
 import { toJsonSchema } from "@valibot/to-json-schema";
 import * as cheerio from "cheerio";
+import { getPayload } from "payload";
 import TurndownService from "turndown";
 import * as v from "valibot";
 
@@ -16,6 +24,7 @@ const ResponseSchema = v.object({
   company: v.pipe(v.string(), v.minLength(1)),
   location: v.pipe(v.string(), v.minLength(1)),
   description: v.pipe(v.string(), v.minLength(20), v.maxLength(2000)),
+  coverLetter: v.pipe(v.string(), v.nonEmpty()),
 });
 
 const JsonSchema = toJsonSchema(ResponseSchema);
@@ -45,8 +54,13 @@ function convertToTokenEfficientMarkdown(rawHtml: string) {
   return markdown;
 }
 
-export async function fetchJobMetadata(urlInput: string) {
-  if (!urlInput) return null;
+export async function fetchJobMetadata(urlInput: string, resumeId: number) {
+  const payload = await getPayload({ config });
+
+  const resume = await payload.findByID({
+    collection: "resumes",
+    id: resumeId,
+  });
 
   try {
     new URL(urlInput);
@@ -77,12 +91,14 @@ export async function fetchJobMetadata(urlInput: string) {
     const markdown = convertToTokenEfficientMarkdown(html);
     if (!markdown) return null;
 
-    // 2. The Optimized Prompt
     const prompt = `
       You are an expert Data Analyst. Your task is to scrape job posting data from the provided content.
 
       INSTRUCTIONS:
-      - Extract the job title, company name, location, and a summary of the job description.
+      - Extract the job title, company name, location, and a summary of the job description from the markdown content.
+      - Create a cover letter based on the resume provided and the description of the job. Go for high ATS score.
+      - Ensure the cover letter is professional and tailored to the job description.
+      - Ensure the cover letter is formatted in markdown with paragraphs and proper spacing.
       - If a field is not present, use "Not specified".
       - For 'title', remove internal reference codes (e.g., "#12345").
       - For 'description', summarize the requirements and responsibilities into a professional paragraph. Do not just copy/paste the whole page.
@@ -99,8 +115,8 @@ export async function fetchJobMetadata(urlInput: string) {
     const result = await (async function executeWithRetry(): Promise<GenerateContentResponse> {
       try {
         return await ai.models.generateContent({
-          model: "gemini-3-flash-preview",
-          contents: markdown,
+          model: "gemini-3.1-flash-lite-preview",
+          contents: JSON.stringify({ markdown, resume }),
           config: {
             tools: [{ urlContext: {} }],
             responseMimeType: "application/json",
@@ -135,8 +151,33 @@ export async function fetchJobMetadata(urlInput: string) {
       console.error("Scraping failed: Target site blocked access or returned error.");
       return null;
     }
+    const json = v.parse(ResponseSchema, parsed);
 
-    return { ...v.parse(ResponseSchema, parsed), url: targetUrl };
+    const defaultEditorConfig = await editorConfigFactory.default({ config: await config });
+
+    const headlessEditor = createHeadlessEditor({
+      nodes: getEnabledNodes({
+        editorConfig: defaultEditorConfig,
+      }),
+    });
+
+    headlessEditor.update(
+      () => {
+        $convertFromMarkdownString(
+          json.coverLetter,
+          defaultEditorConfig.features.markdownTransformers,
+        );
+      },
+      { discrete: true },
+    );
+
+    const coverLetterLexical = headlessEditor.getEditorState().toJSON();
+
+    const response = { ...json, coverLetterLexical, url: targetUrl };
+
+    console.log("Response:", response);
+
+    return response;
   } catch (error) {
     console.error("Scraping error:", error);
     return null;
