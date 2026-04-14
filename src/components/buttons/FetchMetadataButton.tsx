@@ -60,7 +60,7 @@ const FetchMetadataButton: FC<UIFieldClient> = () => {
     <>
       <Button buttonStyle="pill" onClick={handleClick} disabled={isPending}>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span>Extract Metadata from Resume</span>
+          <span>Generate Metadata</span>
           {isPending ? <span className={"spinner"} /> : ""}
         </div>
       </Button>

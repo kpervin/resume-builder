@@ -1,5 +1,7 @@
-import { CollectionConfig, Validate } from "payload";
+import { CollectionConfig, FilterOptions, Validate } from "payload";
 import * as v from "valibot";
+
+import { JobApplication } from "@/payload-types";
 
 export const JobApplicationsCollection = {
   slug: "job-applications",
@@ -11,6 +13,17 @@ export const JobApplicationsCollection = {
   },
   timestamps: true,
   fields: [
+    {
+      name: "jobPostingUrl",
+      type: "text",
+      required: true,
+      admin: {
+        description: "Link to the job posting",
+      },
+      validate: ((value) => {
+        return v.is(v.pipe(v.string(), v.url()), value) ? true : "Please enter a valid URL";
+      }) satisfies Validate<string>,
+    },
     {
       name: "jobTitle",
       type: "text",
@@ -28,15 +41,13 @@ export const JobApplicationsCollection = {
       },
     },
     {
-      name: "jobPostingUrl",
-      type: "text",
+      name: "applicant",
+      type: "relationship",
+      relationTo: "applicants",
       required: true,
       admin: {
-        description: "Link to the job posting",
+        position: "sidebar",
       },
-      validate: ((value) => {
-        return v.is(v.pipe(v.string(), v.url()), value) ? true : "Please enter a valid URL";
-      }) satisfies Validate<string>,
     },
     {
       name: "resume",
@@ -45,7 +56,17 @@ export const JobApplicationsCollection = {
       required: true,
       admin: {
         description: "Resume to submit with this application",
+        position: "sidebar",
+        condition: (entry) => !!entry.applicant,
       },
+      filterOptions: (({ data }) => {
+        if (!data.applicant) return true;
+        return {
+          applicant: {
+            equals: typeof data.applicant === "number" ? data.applicant : data.applicant.id,
+          },
+        };
+      }) satisfies FilterOptions<JobApplication>,
     },
     {
       name: "coverLetter",
@@ -53,15 +74,6 @@ export const JobApplicationsCollection = {
       required: true,
       admin: {
         description: "Cover letter written for this application",
-      },
-    },
-    {
-      name: "applicant",
-      type: "relationship",
-      relationTo: "applicants",
-      required: true,
-      admin: {
-        position: "sidebar",
       },
     },
     {
