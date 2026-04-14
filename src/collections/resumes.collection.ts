@@ -13,7 +13,35 @@ export const ResumesCollection = {
     drafts: true,
   },
   timestamps: true,
+  admin: {
+    useAsTitle: "title",
+  },
   fields: [
+    {
+      name: "title",
+      type: "text",
+      required: true,
+      admin: {
+        description: "Title of the resume",
+      },
+      hooks: {
+        beforeChange: [
+          async ({ value: _value, siblingData, req }) => {
+            const value = (_value ?? "").trim();
+            if (value) return toTitleCase(value);
+            const applicant =
+              typeof siblingData.applicant === "number"
+                ? await req.payload.findByID({
+                    collection: "applicants",
+                    id: siblingData.applicant,
+                  })
+                : siblingData.applicant;
+            if (!applicant?.fullName) return "Resume";
+            return `Resume - ${applicant.fullName}`;
+          },
+        ] satisfies FieldHook<Resume, Resume["title"], Resume>[],
+      },
+    },
     {
       name: "applicant",
       type: "relationship",
@@ -95,6 +123,12 @@ export const ResumesCollection = {
           name: "startDate",
           type: "date",
           required: true,
+          admin: {
+            date: {
+              pickerAppearance: "monthOnly",
+              displayFormat: "MMMM yyyy",
+            },
+          },
         },
         {
           name: "current",
@@ -108,6 +142,11 @@ export const ResumesCollection = {
             return true;
           }) satisfies Validate<Date, Resume, ExperienceItem>,
           admin: {
+            date: {
+              pickerAppearance: "monthOnly",
+              displayFormat: "MMMM yyyy",
+            },
+
             condition: ((_, siblingData) => !siblingData?.current) satisfies Condition<
               Resume,
               ExperienceItem
@@ -117,6 +156,42 @@ export const ResumesCollection = {
         locationField(LocationParsers.city, {
           required: true,
         }),
+      ],
+    },
+    {
+      name: "education",
+      type: "array",
+      fields: [
+        {
+          name: "school",
+          type: "text",
+          required: true,
+        },
+        {
+          name: "degree",
+          type: "text",
+        },
+        {
+          name: "startDate",
+          type: "date",
+          required: true,
+          admin: {
+            date: {
+              pickerAppearance: "monthOnly",
+              displayFormat: "MMMM yyyy",
+            },
+          },
+        },
+        {
+          name: "endDate",
+          type: "date",
+          admin: {
+            date: {
+              pickerAppearance: "monthOnly",
+              displayFormat: "MMMM yyyy",
+            },
+          },
+        },
       ],
     },
     {

@@ -159,6 +159,10 @@ export interface Location {
  */
 export interface Resume {
   id: number;
+  /**
+   * Title of the resume
+   */
+  title: string;
   applicant: number | Applicant;
   description: string;
   /**
@@ -200,6 +204,15 @@ export interface Resume {
         id?: string | null;
       }[]
     | null;
+  education?:
+    | {
+        school: string;
+        degree?: string | null;
+        startDate: string;
+        endDate?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   references?: (number | Reference)[] | null;
   updatedAt: string;
   createdAt: string;
@@ -228,6 +241,10 @@ export interface Reference {
 export interface JobApplication {
   id: number;
   /**
+   * Link to the job posting
+   */
+  jobPostingUrl: string;
+  /**
    * Title of the position being applied for
    */
   jobTitle: string;
@@ -235,14 +252,11 @@ export interface JobApplication {
    * Company applying for the position
    */
   company: string;
-  /**
-   * Link to the job posting
-   */
-  jobPostingUrl: string;
+  applicant: number | Applicant;
   /**
    * Resume to submit with this application
    */
-  resume: number | Resume;
+  resume?: (number | null) | Resume;
   /**
    * Cover letter written for this application
    */
@@ -261,7 +275,6 @@ export interface JobApplication {
     };
     [k: string]: unknown;
   };
-  applicant: number | Applicant;
   /**
    * Timestamp when the application was submitted
    */
@@ -439,6 +452,7 @@ export interface LocationSelect<T extends boolean = true> {
  * via the `definition` "resumes_select".
  */
 export interface ResumesSelect<T extends boolean = true> {
+  title?: T;
   applicant?: T;
   description?: T;
   skillSections?:
@@ -458,6 +472,15 @@ export interface ResumesSelect<T extends boolean = true> {
         current?: T;
         endDate?: T;
         location?: T | LocationSelect<T>;
+        id?: T;
+      };
+  education?:
+    | T
+    | {
+        school?: T;
+        degree?: T;
+        startDate?: T;
+        endDate?: T;
         id?: T;
       };
   references?: T;
@@ -487,12 +510,12 @@ export interface ReferencesSelect<T extends boolean = true> {
  * via the `definition` "job-applications_select".
  */
 export interface JobApplicationsSelect<T extends boolean = true> {
+  jobPostingUrl?: T;
   jobTitle?: T;
   company?: T;
-  jobPostingUrl?: T;
+  applicant?: T;
   resume?: T;
   coverLetter?: T;
-  applicant?: T;
   submittedAt?: T;
   updatedAt?: T;
   createdAt?: T;
