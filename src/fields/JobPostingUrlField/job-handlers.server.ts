@@ -15,10 +15,14 @@ const getMetaTag = (html: string, property: string): string => {
   return html.match(regex)?.[1] || "";
 };
 
+const isAllowedHost = (hostname: string, domain: string): boolean => {
+  return hostname === domain || hostname.endsWith(`.${domain}`);
+};
+
 const LinkedInHandler = {
   name: "LinkedIn",
   matches(url) {
-    return url.hostname.includes("linkedin.com");
+    return isAllowedHost(url.hostname, "linkedin.com");
   },
   normalize(url) {
     const jobId = url.searchParams.get("currentJobId");
@@ -39,7 +43,7 @@ const IndeedHandler = {
   name: "Indeed",
 
   matches(url) {
-    return url.hostname.includes("indeed.com");
+    return isAllowedHost(url.hostname, "indeed.com");
   },
 
   normalize(url) {
