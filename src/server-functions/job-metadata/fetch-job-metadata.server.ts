@@ -115,7 +115,7 @@ export async function fetchJobMetadata(urlInput: string, resumeId: number) {
     const result = await (async function executeWithRetry(): Promise<GenerateContentResponse> {
       try {
         return await ai.models.generateContent({
-          model: "gemini-3.1-flash-lite-preview",
+          model: "gemini-3-flash-preview",
           contents: JSON.stringify({ markdown, resume }),
           config: {
             tools: [{ urlContext: {} }],

@@ -94,5 +94,15 @@ export const JobApplicationsCollection = {
         position: "sidebar",
       },
     },
+    {
+      name: "generatePDF",
+      type: "ui",
+      admin: {
+        components: {
+          Field: "/components/buttons/GenerateResumePDFButton.tsx",
+        },
+        position: "sidebar",
+      },
+    },
   ],
 } as const satisfies CollectionConfig<"job-applications">;

@@ -57,14 +57,12 @@ const FetchMetadataButton: FC<UIFieldClient> = () => {
   };
 
   return (
-    <>
-      <Button buttonStyle="pill" onClick={handleClick} disabled={isPending}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span>Generate Metadata</span>
-          {isPending ? <span className={"spinner"} /> : ""}
-        </div>
-      </Button>
-    </>
+    <Button buttonStyle="pill" onClick={handleClick} disabled={isPending}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <span>Generate Metadata</span>
+        {isPending ? <span className={"spinner"} /> : ""}
+      </div>
+    </Button>
   );
 };
 

@@ -1,4 +1,10 @@
-import { CollectionConfig, Condition, FieldHook, Validate } from "payload";
+import {
+  CollectionBeforeChangeHook,
+  CollectionConfig,
+  Condition,
+  FieldHook,
+  Validate,
+} from "payload";
 
 import { ReferencesCollection } from "@/collections/references.collection";
 import { locationField, LocationParsers } from "@/fields/LocationField/location.field";
@@ -16,6 +22,26 @@ export const ResumesCollection = {
   admin: {
     useAsTitle: "title",
   },
+  hooks: {
+    beforeChange: [
+      async ({ data, req }) => {
+        data.title = await (async () => {
+          const value = (data.title ?? "").trim();
+          if (value) return toTitleCase(value);
+          const applicant =
+            typeof data.applicant === "number"
+              ? await req.payload.findByID({
+                  collection: "applicants",
+                  id: data.applicant,
+                })
+              : data.applicant;
+          if (!applicant?.fullName) return "Resume";
+          return `Resume - ${applicant.fullName}`;
+        })();
+        return data;
+      },
+    ] satisfies CollectionBeforeChangeHook<Resume>[],
+  },
   fields: [
     {
       name: "title",
@@ -23,23 +49,6 @@ export const ResumesCollection = {
       required: true,
       admin: {
         description: "Title of the resume",
-      },
-      hooks: {
-        beforeChange: [
-          async ({ value: _value, siblingData, req }) => {
-            const value = (_value ?? "").trim();
-            if (value) return toTitleCase(value);
-            const applicant =
-              typeof siblingData.applicant === "number"
-                ? await req.payload.findByID({
-                    collection: "applicants",
-                    id: siblingData.applicant,
-                  })
-                : siblingData.applicant;
-            if (!applicant?.fullName) return "Resume";
-            return `Resume - ${applicant.fullName}`;
-          },
-        ] satisfies FieldHook<Resume, Resume["title"], Resume>[],
       },
     },
     {
@@ -199,6 +208,16 @@ export const ResumesCollection = {
       type: "relationship",
       relationTo: ReferencesCollection.slug,
       hasMany: true,
+    },
+    {
+      name: "generatePDF",
+      type: "ui",
+      admin: {
+        components: {
+          Field: "/components/buttons/GenerateResumePDFButton.tsx",
+        },
+        position: "sidebar",
+      },
     },
   ],
 } as const satisfies CollectionConfig<"resumes">;

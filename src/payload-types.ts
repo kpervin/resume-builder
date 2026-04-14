@@ -138,6 +138,14 @@ export interface Applicant {
   };
   location: Location;
   phone?: string | null;
+  email: string;
+  socialLinks?:
+    | {
+        label: string;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -432,6 +440,14 @@ export interface ApplicantsSelect<T extends boolean = true> {
       };
   location?: T | LocationSelect<T>;
   phone?: T;
+  email?: T;
+  socialLinks?:
+    | T
+    | {
+        label?: T;
+        url?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
