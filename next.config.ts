@@ -37,6 +37,7 @@ const nextConfig: NextConfig = {
   typedRoutes: true,
   experimental: {
     typedEnv: true,
+    authInterrupts: true,
   },
 };
 

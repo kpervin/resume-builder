@@ -1,5 +1,3 @@
-import "./global.scss";
-
 export default function PrintLayout(props: LayoutProps<"/">) {
   return (
     <html lang="en">

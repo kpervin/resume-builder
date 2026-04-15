@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, useForm } from "@payloadcms/ui";
-import { FormField, UIFieldClient } from "payload";
+import { UIFieldClient } from "payload";
 import { type FC, useTransition } from "react";
 import * as v from "valibot";
 
@@ -40,7 +40,12 @@ const FetchMetadataButton: FC<UIFieldClient> = () => {
             jobTitle: { value: data.title },
             company: { value: data.company },
             jobPostingUrl: { value: data.url },
-          } satisfies Partial<{ [key in keyof JobApplication]: FormField }>,
+            "location.fullAddress": { value: data.location.fullAddress },
+            "location.street": { value: data.location.street },
+            "location.city": { value: data.location.city },
+            "location.state": { value: data.location.province },
+            "location.postalCode": { value: data.location.postalCode },
+          },
         });
 
         dispatchFields({
