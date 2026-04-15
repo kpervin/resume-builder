@@ -29,7 +29,6 @@ export async function GET(
     return new Response("Unauthorized", { status: 401 });
   }
 
-  // Confirm access and gather filename data (and fail fast on required fields)
   const resume = await payload.findByID({
     collection: "resumes",
     id,
