@@ -13,12 +13,6 @@ const SplitTextOnPasteTextField: TextFieldClientComponent = (props) => {
 
     const pastedData = e.clipboardData.getData("text");
 
-    /**
-     * THE LOGIC:
-     * 1. Split by newlines.
-     * 2. Split by spaces EXCEPT if the space is inside parentheses
-     *    or immediately followed by an opening parenthesis.
-     */
     const newItems = pastedData
       .split("\n")
       .map((i) => i.trim())
