@@ -1,3 +1,5 @@
+import type { Route } from "next";
+
 const smallWords = /^(a|an|and|as|at|but|by|en|for|if|in|of|on|or|the|to|v\.?|via)$/i;
 
 export function toTitleCase(str: string) {
@@ -13,10 +15,7 @@ export function toTitleCase(str: string) {
     .join(" ");
 }
 
-export function debounce<T extends (...args: any[]) => void>(fn: T, delay: number) {
-  let timeoutId: ReturnType<typeof setTimeout>;
-  return (...args: Parameters<T>) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn(...args), delay);
-  };
+export function generatePreviewUrl<T extends string>(path: Route<T>): string {
+  const baseUrl = process.env.PAYLOAD_PUBLIC_SITE_URL || "http://localhost:3000";
+  return `${baseUrl}${path}` as Route;
 }

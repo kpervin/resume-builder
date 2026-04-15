@@ -43,7 +43,7 @@ const GenerateResumePDFButton: FC<UIFieldClient & { title?: string; resumePath?:
         return;
       }
       try {
-        window.location.assign(`/admin/resumes/${resumeId}/pdf`);
+        window.location.assign(`/resumes/${resumeId}?disposition=attachment`);
         return;
       } catch (e) {
         console.error("Failed to start PDF download", e);
@@ -53,7 +53,7 @@ const GenerateResumePDFButton: FC<UIFieldClient & { title?: string; resumePath?:
   };
 
   return (
-    <span style={{ margin: "0 1rem" }}>
+    <>
       <Button buttonStyle="pill" onClick={handleClick} disabled={isPending}>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <span>{title}</span>
@@ -61,7 +61,7 @@ const GenerateResumePDFButton: FC<UIFieldClient & { title?: string; resumePath?:
         </div>
       </Button>
       <FieldError showError={!!error} message={error} />
-    </span>
+    </>
   );
 };
 

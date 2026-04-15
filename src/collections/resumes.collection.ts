@@ -1,15 +1,9 @@
-import {
-  CollectionBeforeChangeHook,
-  CollectionConfig,
-  Condition,
-  FieldHook,
-  Validate,
-} from "payload";
+import { CollectionBeforeChangeHook, CollectionConfig, Condition, Validate } from "payload";
 
 import { ReferencesCollection } from "@/collections/references.collection";
 import { locationField, LocationParsers } from "@/fields/LocationField/location.field";
 import { Resume } from "@/payload-types";
-import { toTitleCase } from "@/utils/fns";
+import { generatePreviewUrl, toTitleCase } from "@/utils/fns";
 
 type ExperienceItem = NonNullable<Resume["experience"]>[number];
 
@@ -21,6 +15,7 @@ export const ResumesCollection = {
   timestamps: true,
   admin: {
     useAsTitle: "title",
+    preview: ({ id }) => generatePreviewUrl(`/resumes/${id}`),
   },
   hooks: {
     beforeChange: [
@@ -84,13 +79,9 @@ export const ResumesCollection = {
           required: true,
           admin: {
             description: "Add skills relevant to this category",
-          },
-          hooks: {
-            beforeChange: [
-              ({ value = [] }) => {
-                return value.map(toTitleCase);
-              },
-            ] satisfies FieldHook<Resume, string[]>[],
+            components: {
+              Field: "/components/textfields/SplitTextOnPasteTextField.client",
+            },
           },
           validate: ((value, options) => {
             const { data } = options;
