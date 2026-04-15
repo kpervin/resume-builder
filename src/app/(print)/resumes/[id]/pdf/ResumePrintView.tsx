@@ -1,5 +1,5 @@
 import { RichText } from "@payloadcms/richtext-lexical/react";
-import React from "react";
+import React, { FC } from "react";
 
 import type { Applicant, Reference, Resume } from "@/payload-types";
 
@@ -25,6 +25,15 @@ type ResumePrintViewProps = {
   references: Reference[];
 };
 
+const HeaderInfoLine: FC<{ label: string; value: string | null }> = ({ label, value }) => {
+  if (!value) return null;
+  return (
+    <p className="header-info-line">
+      <span className="label-strong">{label}:</span> {value}
+    </p>
+  );
+};
+
 export function ResumePrintView({ resume, applicant, references }: ResumePrintViewProps) {
   const fullName =
     applicant.fullName ||
@@ -38,46 +47,27 @@ export function ResumePrintView({ resume, applicant, references }: ResumePrintVi
 
   return (
     <div className="page">
-      {/* --- HEADER --- */}
       <h1 className="header-name">{fullName}</h1>
-
       <div className="header-info-list">
-        {address && (
-          <p className="header-info-line">
-            <span className="label-strong">Address:</span> {address}
-          </p>
-        )}
-        {phone && (
-          <p className="header-info-line">
-            <span className="label-strong">Phone:</span> {phone}
-          </p>
-        )}
-        {email && (
-          <p className="header-info-line">
-            <span className="label-strong">Email:</span> {email}
-          </p>
-        )}
+        <HeaderInfoLine label="Address" value={address} />
+        <HeaderInfoLine label="Phone" value={phone} />
+        <HeaderInfoLine label="Email" value={email} />
         {socialLinks.map((s, i) => (
-          <p key={i} className="header-info-line">
-            <span className="label-strong">{s.label}:</span> {s.url}
-          </p>
+          <HeaderInfoLine key={i} label={s.label} value={s.url} />
         ))}
       </div>
-
-      {/* --- SUMMARY --- */}
       <section>
         <h2 className="section-heading">Summary</h2>
         <SummaryText text={String(resume.description ?? "").trim()} />
       </section>
 
-      {/* --- SKILLS (Categorized) --- */}
       {(resume.skillSections ?? []).filter(Boolean).map((s, idx) => {
         const category = String(s?.category ?? "").trim();
         const items = (s?.skills ?? []).map((x) => String(x ?? "").trim()).filter(Boolean);
         if (!category || items.length === 0) return null;
 
         return (
-          <section key={idx}>
+          <section id={`skills-${category}`} key={idx}>
             <h2 className="section-heading">{category}</h2>
             <div className="badge-container">
               {items.map((skill, sIdx) => (
@@ -89,9 +79,7 @@ export function ResumePrintView({ resume, applicant, references }: ResumePrintVi
           </section>
         );
       })}
-
-      {/* --- WORK EXPERIENCE --- */}
-      <section>
+      <section id={"work-experience"}>
         <h2 className="section-heading">Work experience</h2>
         {(resume.experience ?? []).filter(Boolean).map((e, idx) => {
           const start = formatMonthYear(e.startDate);
@@ -118,9 +106,7 @@ export function ResumePrintView({ resume, applicant, references }: ResumePrintVi
           );
         })}
       </section>
-
-      {/* --- EDUCATION --- */}
-      <section>
+      <section id={"education"}>
         <h2 className="section-heading">Education</h2>
         {(resume.education ?? []).filter(Boolean).map((ed, idx) => {
           const dates = [formatMonthYear(ed.startDate), formatMonthYear(ed.endDate)]
@@ -140,9 +126,7 @@ export function ResumePrintView({ resume, applicant, references }: ResumePrintVi
           );
         })}
       </section>
-
-      {/* --- REFERENCES --- */}
-      <section>
+      <section id={"references"}>
         <h2 className="section-heading">References</h2>
         {references.map((r, idx) => {
           const emailMethod = (r?.contactMethods ?? []).find(
