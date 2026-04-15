@@ -1,21 +1,13 @@
 import type { Applicant } from "@/payload-types";
 
-export function escapeHtml(input: string): string {
-  return input
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
-
 export function formatMonthYear(input: string | Date | null | undefined): string {
   if (!input) return "";
   const d = typeof input === "string" ? new Date(input) : input;
   if (Number.isNaN(d.getTime())) return "";
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const yyyy = String(d.getFullYear());
-  return `${mm}/${yyyy}`;
+  return new Intl.DateTimeFormat("en-US", {
+    month: "2-digit",
+    year: "numeric",
+  }).format(d);
 }
 
 export function formatHeaderAddress(applicant: Applicant): string {
