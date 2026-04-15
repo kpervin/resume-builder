@@ -1,5 +1,4 @@
 import config from "@payload-config";
-import { Metadata } from "next";
 import { headers as getHeaders } from "next/headers";
 import { getPayload } from "payload";
 import React from "react";
@@ -9,25 +8,6 @@ import { ResumePrintView } from "./ResumePrintView";
 export const runtime = "nodejs";
 
 type Props = PageProps<"/resumes/[id]/pdf">;
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const id = (await params).id;
-  const headers = await getHeaders();
-  const payload = await getPayload({ config });
-  const { user } = await payload.auth({ headers });
-  const resume = await payload.findByID({
-    collection: "resumes",
-    id,
-    depth: 2,
-    draft: true,
-    user,
-    overrideAccess: false,
-  });
-  return {
-    title: resume.title,
-    description: resume.description,
-  };
-}
 
 export default async function ResumePrintPage({ params }: Props) {
   const { id } = await params;
