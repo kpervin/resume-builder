@@ -1,3 +1,6 @@
+/* src/styles/payloadStyles.css */
+
+/* Define the Tailwind layers in the correct order */
 @layer theme, base, components, utilities;
 
 /* Import the Tailwind theme styles */
@@ -11,24 +14,3 @@
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 @custom-variant light (&:where([data-theme=light], [data-theme=light] *));
-
-.spinner {
-  width: 1rem;
-  height: 1rem;
-  display: inline-block;
-  vertical-align: middle;
-  border: 2px solid currentColor;
-  border-bottom-color: transparent;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.multi-value-label__text {
-  text-overflow: inherit;
-}

@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+@page {
+  size: Letter;
+  margin: 18mm;
+}
+
+@layer base {
+  html,
+  body {
+    @apply m-0 p-0;
+    @apply font-sans text-[11px] leading-[1.4];
+    height: 100%;
+    margin: 0;
+  }
+
+  h1,
+  h2,
+  h3,
+  p,
+  ul,
+  ol {
+    @apply m-0;
+  }
+}
+
+@layer components {
+  .page {
+    @apply mx-auto w-full max-w-200;
+  }
+
+  .header-name {
+    @apply mb-4 mt-2;
+    @apply text-[32px] font-normal tracking-tight;
+  }
+
+  .header-info-list {
+    @apply flex flex-col gap-0.5;
+  }
+
+  .header-info-line {
+    @apply text-[11.5px];
+  }
+
+  .label-strong {
+    @apply mr-1;
+    @apply font-bold;
+  }
+
+  .section-heading {
+    @apply mb-3 mt-7 pb-1;
+    @apply flex items-center gap-2;
+    @apply border-b-[1.5px] border-black dark:border-white;
+    @apply text-[14px] font-normal;
+  }
+
+  .section-icon {
+    @apply h-3.5 w-3.5;
+    @apply fill-current;
+  }
+
+  .text-block {
+    @apply text-justify text-[11.5px] leading-[1.4];
+  }
+
+  .badge-container {
+    @apply mb-1 mt-1 p-0;
+    @apply flex flex-wrap gap-1.5 list-none;
+  }
+
+  .badge {
+    @apply px-2 py-1;
+    @apply bg-black text-white;
+    @apply text-[11.5px] font-medium leading-none;
+  }
+
+  .grid-item {
+    @apply mb-5;
+    @apply grid grid-cols-[140px_1fr] gap-4;
+    @apply break-inside-avoid;
+  }
+
+  .grid-left {
+    @apply flex flex-col;
+    @apply text-[10.5px] leading-[1.4];
+  }
+
+  .grid-right {
+    @apply flex flex-col;
+  }
+
+  .item-title {
+    @apply text-[13px] font-bold leading-snug;
+  }
+
+  .item-subtitle {
+    @apply mb-1;
+    @apply text-[13px] font-bold leading-snug;
+  }
+
+  .item-description {
+    @apply text-justify text-[11.5px] leading-[1.35];
+
+    :is(p, ul, ol) {
+      @apply m-0 my-1;
+    }
+
+    ul,
+    ol {
+      @apply pl-4;
+      @apply list-disc;
+    }
+  }
+}

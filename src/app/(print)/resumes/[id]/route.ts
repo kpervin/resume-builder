@@ -2,6 +2,8 @@ import config from "@payload-config";
 import { headers as getHeaders } from "next/headers";
 import { getPayload } from "payload";
 
+import { generatePreviewUrl } from "@/utils/fns";
+
 export const runtime = "nodejs";
 
 function isBodyInit(body: unknown): body is BodyInit {
@@ -54,10 +56,8 @@ export async function GET(
     return new Response("Applicant email is required to render the resume.", { status: 400 });
   }
 
-  const origin = new URL(request.url).origin;
-  const previewUrl = `${origin}/admin/resumes/${encodeURIComponent(id)}/print`;
+  const previewUrl = generatePreviewUrl(`/resumes/${encodeURIComponent(id)}/pdf`);
 
-  // Lazy import so local dev without browsers installed fails clearly at runtime
   const { chromium } = await import("playwright");
 
   const cookie = headers.get("cookie") ?? "";
@@ -83,7 +83,8 @@ export async function GET(
       },
     });
     const url = new URL(request.url);
-    const disposition = url.searchParams.get("disposition") === "inline" ? "inline" : "attachment";
+    const disposition =
+      url.searchParams.get("disposition") === "attachment" ? "attachment" : "inline";
     const downloadToken = url.searchParams.get("token");
 
     const fullName =
@@ -99,12 +100,13 @@ export async function GET(
     if (!isBodyInit(pdf)) {
       return new Response("Internal Server Error: Invalid PDF body generated.", { status: 500 });
     }
-
+    const contentDisposition =
+      disposition === "inline" ? "inline" : `attachment; filename="${filename}"`;
     const response = new Response(pdf, {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `${disposition}; filename="${filename}"`,
+        "Content-Disposition": contentDisposition,
         "Cache-Control": "no-store",
       },
     });

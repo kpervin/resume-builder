@@ -34,6 +34,10 @@ const nextConfig: NextConfig = {
       permanent: true,
     },
   ],
+  typedRoutes: true,
+  experimental: {
+    typedEnv: true,
+  },
 };
 
 export default withPayload(nextConfig, { devBundleServerPackages: false });

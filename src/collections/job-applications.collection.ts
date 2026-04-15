@@ -85,24 +85,30 @@ export const JobApplicationsCollection = {
       },
     },
     {
-      name: "fetchMetadata",
-      type: "ui",
+      type: "row",
       admin: {
-        components: {
-          Field: "/components/buttons/FetchMetadataButton.tsx",
-        },
         position: "sidebar",
       },
-    },
-    {
-      name: "generatePDF",
-      type: "ui",
-      admin: {
-        components: {
-          Field: "/components/buttons/GenerateResumePDFButton.tsx",
+      fields: [
+        {
+          name: "fetchMetadata",
+          type: "ui",
+          admin: {
+            components: {
+              Field: "/components/buttons/FetchMetadataButton.tsx",
+            },
+          },
         },
-        position: "sidebar",
-      },
+        {
+          name: "generatePDF",
+          type: "ui",
+          admin: {
+            components: {
+              Field: "/components/buttons/GenerateResumePDFButton.tsx",
+            },
+          },
+        },
+      ],
     },
   ],
 } as const satisfies CollectionConfig<"job-applications">;
