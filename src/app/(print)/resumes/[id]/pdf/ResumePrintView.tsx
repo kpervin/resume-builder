@@ -153,7 +153,6 @@ export function ResumePrintView({ resume, applicant, references }: ResumePrintVi
               <div className="grid-left">
                 <span>{emailMethod?.email}</span>
               </div>
-              <div>Hello</div>
               <div className="grid-right">
                 <div className="item-title">{String(r?.name ?? "").trim()}</div>
                 <div className="item-subtitle mb-0!">{String(r?.company ?? "").trim()}</div>
