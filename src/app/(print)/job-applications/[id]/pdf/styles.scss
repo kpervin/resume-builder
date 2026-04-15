@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  --text-doc: 11pt;
+  --leading-doc: 1.15;
+  --page-margin: 1in;
+  --doc-gap: 1.15em;
+}
+
+@layer components {
+  .page {
+    @apply bg-white mx-auto;
+    width: 8.5in;
+    min-height: 11in;
+    padding: var(--page-margin);
+    font-family: Arial, sans-serif;
+    font-size: var(--text-doc);
+    line-height: var(--leading-doc);
+    color: black;
+  }
+
+  .page p {
+    margin-top: 0;
+    margin-bottom: var(--doc-gap);
+  }
+
+  .address-block {
+    margin-bottom: var(--doc-gap);
+  }
+
+  .address-block div {
+    margin-bottom: 0;
+  }
+
+  .page :where(.payload-richtext) p {
+    margin-bottom: var(--doc-gap);
+  }
+
+  .signature-gap {
+    margin-bottom: calc(var(--doc-gap) * 3);
+  }
+
+  .page *:last-child {
+    margin-bottom: 0;
+  }
+}

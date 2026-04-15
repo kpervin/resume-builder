@@ -260,6 +260,7 @@ export interface JobApplication {
    * Company applying for the position
    */
   company: string;
+  location: Location;
   applicant: number | Applicant;
   /**
    * Resume to submit with this application
@@ -529,6 +530,7 @@ export interface JobApplicationsSelect<T extends boolean = true> {
   jobPostingUrl?: T;
   jobTitle?: T;
   company?: T;
+  location?: T | LocationSelect<T>;
   applicant?: T;
   resume?: T;
   coverLetter?: T;

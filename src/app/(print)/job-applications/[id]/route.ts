@@ -6,7 +6,7 @@ import { buildPdfFromPreview, buildPdfResponseHeaders, isBodyInit } from "@/util
 
 export const runtime = "nodejs";
 
-export async function GET(request: Request, ctx: RouteContext<"/resumes/[id]">): Promise<Response> {
+export async function GET(request: Request, ctx: RouteContext<"/job-applications/[id]">) {
   const { id } = await ctx.params;
   const headers = await getHeaders();
 
@@ -17,50 +17,32 @@ export async function GET(request: Request, ctx: RouteContext<"/resumes/[id]">):
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const resume = await payload.findByID({
-    collection: "resumes",
+  const application = await payload.findByID({
+    collection: "job-applications",
     id,
-    depth: 2,
     draft: true,
     user,
     overrideAccess: false,
   });
 
   const applicant =
-    typeof resume.applicant === "number"
+    typeof application.applicant === "number"
       ? await payload.findByID({
           collection: "applicants",
-          id: resume.applicant,
+          id: application.applicant,
           depth: 1,
           draft: true,
           user,
           overrideAccess: false,
         })
-      : resume.applicant;
+      : application.applicant;
 
-  const email = applicant?.email;
-
-  if (!email) {
-    return new Response("Applicant email is required to render the resume.", { status: 400 });
-  }
-
-  const pdf = await buildPdfFromPreview(`/resumes/${encodeURIComponent(id)}/pdf`);
-
-  const fullName =
-    applicant?.fullName ||
-    `${applicant?.name?.firstName ?? ""} ${applicant?.name?.lastName ?? ""}`.trim() ||
-    "Resume";
-
-  const safeName = String(fullName)
-    .trim()
-    .replace(/\s+/g, "_")
-    .replace(/[^A-Za-z0-9_.-]/g, "");
-
-  const filename = `${safeName}_Resume.pdf`;
+  const pdf = await buildPdfFromPreview(`/job-applications/${encodeURIComponent(id)}/pdf`);
 
   if (!isBodyInit(pdf)) {
     return new Response("Internal Server Error: Invalid PDF body generated.", { status: 500 });
   }
+  const filename = `${applicant.fullName} - ${application.company} Cover Letter.pdf`;
 
   return new Response(pdf, {
     status: 200,

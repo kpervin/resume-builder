@@ -1,6 +1,7 @@
 import { CollectionBeforeChangeHook, CollectionConfig, Condition, Validate } from "payload";
 
 import { ReferencesCollection } from "@/collections/references.collection";
+import { GeneratePDFButtonProps } from "@/components/buttons/GeneratePDFButton";
 import { locationField, LocationParsers } from "@/fields/LocationField/location.field";
 import { Resume } from "@/payload-types";
 import { generatePreviewUrl, toTitleCase } from "@/utils/fns";
@@ -205,7 +206,12 @@ export const ResumesCollection = {
       type: "ui",
       admin: {
         components: {
-          Field: "/components/buttons/GenerateResumePDFButton.tsx",
+          Field: {
+            path: "/components/buttons/GeneratePDFButton.tsx",
+            clientProps: {
+              previewPath: `/resumes/:id`,
+            } satisfies GeneratePDFButtonProps,
+          },
         },
         position: "sidebar",
       },

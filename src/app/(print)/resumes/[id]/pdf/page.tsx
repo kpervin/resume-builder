@@ -1,9 +1,12 @@
 import config from "@payload-config";
 import { headers as getHeaders } from "next/headers";
+import { unauthorized } from "next/navigation";
 import { getPayload } from "payload";
 import React from "react";
 
 import { ResumePrintView } from "./ResumePrintView";
+
+import "./styles.scss";
 
 export const runtime = "nodejs";
 
@@ -17,7 +20,7 @@ export default async function ResumePrintPage({ params }: Props) {
   const { user } = await payload.auth({ headers });
 
   if (!user) {
-    return new Response("Unauthorized", { status: 401 });
+    return unauthorized();
   }
 
   const resume = await payload.findByID({

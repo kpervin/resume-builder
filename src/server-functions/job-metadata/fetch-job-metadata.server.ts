@@ -22,9 +22,15 @@ const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const ResponseSchema = v.object({
   title: v.pipe(v.string(), v.minLength(3)),
   company: v.pipe(v.string(), v.minLength(1)),
-  location: v.pipe(v.string(), v.minLength(1)),
   description: v.pipe(v.string(), v.minLength(20), v.maxLength(2000)),
   coverLetter: v.pipe(v.string(), v.nonEmpty()),
+  location: v.object({
+    fullAddress: v.string(),
+    street: v.string(),
+    city: v.string(),
+    province: v.string(),
+    postalCode: v.string(),
+  }),
 });
 
 const JsonSchema = toJsonSchema(ResponseSchema);
@@ -91,6 +97,16 @@ export async function fetchJobMetadata(urlInput: string, resumeId: number) {
     const markdown = convertToTokenEfficientMarkdown(html);
     if (!markdown) return null;
 
+    const template = /* markdown */ `
+      Dear {{recipient_honorific_and_last_name}}:
+
+      [//]: # ( Here fill in the body of the cover letter )
+
+      Sincerely,
+
+      {{sender_name}}
+    `;
+
     const prompt = `
       You are an expert Data Analyst. Your task is to scrape job posting data from the provided content.
 
@@ -104,6 +120,12 @@ export async function fetchJobMetadata(urlInput: string, resumeId: number) {
       - For 'description', summarize the requirements and responsibilities into a professional paragraph. Do not just copy/paste the whole page.
       - If the page requires a login, displays a "404", or is blocked, return a JSON that signals an error instead of guessing data.
       - Do not include any conversational filler. Return pure JSON.
+      - When fetching the location,  search for the company using Google Maps API while cross-referencing with the listing or other job postings by the company.
+
+      Follow this template as a guideline:
+      \`\`\`markdown
+      ${template}
+      \`\`\`
     `;
 
     let retries = 0;

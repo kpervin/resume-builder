@@ -1,12 +1,16 @@
 import { CollectionConfig, FilterOptions, Validate } from "payload";
 import * as v from "valibot";
 
+import { GeneratePDFButtonProps } from "@/components/buttons/GeneratePDFButton";
+import { locationField, LocationParsers } from "@/fields/LocationField/location.field";
 import { JobApplication } from "@/payload-types";
+import { generatePreviewUrl } from "@/utils/fns";
 
 export const JobApplicationsCollection = {
   slug: "job-applications",
   admin: {
     useAsTitle: "jobTitle",
+    preview: ({ id }) => generatePreviewUrl(`/job-applications/${id}`),
   },
   versions: {
     drafts: true,
@@ -40,6 +44,9 @@ export const JobApplicationsCollection = {
         description: "Company applying for the position",
       },
     },
+    locationField(LocationParsers.address, {
+      required: true,
+    }),
     {
       name: "applicant",
       type: "relationship",
@@ -104,8 +111,14 @@ export const JobApplicationsCollection = {
           type: "ui",
           admin: {
             components: {
-              Field: "/components/buttons/GenerateResumePDFButton.tsx",
+              Field: {
+                path: "/components/buttons/GeneratePDFButton.tsx",
+                clientProps: {
+                  previewPath: `/job-applications/:id`,
+                } satisfies GeneratePDFButtonProps,
+              },
             },
+            position: "sidebar",
           },
         },
       ],
