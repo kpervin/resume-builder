@@ -17,10 +17,7 @@ jobs:
 
       - name: Setup proto
         uses: moonrepo/setup-proto@v0
-        with:
-          # Automatically runs 'proto install' based on your .prototools file
-          # This ensures the exact Node.js and pnpm versions are used.
-          auto-install: true
+
       - run: proto use
 
       - name: Install dependencies
