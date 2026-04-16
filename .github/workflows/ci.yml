@@ -10,7 +10,9 @@ jobs:
   build-and-test:
     name: Build and Test
     runs-on: ubuntu-latest
-
+    env:
+      PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
