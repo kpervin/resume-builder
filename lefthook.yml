@@ -4,12 +4,15 @@ pre-commit:
   parallel: false
   jobs:
     - run: pnpm codegen
-    - run: pnpm fmt -- {staged_files}
+    - run: pnpm exec oxfmt {staged_files}
       stage_fixed: true
-    - run: pnpm lint:fix -- {staged_files}
+    - run: pnpm exec oxlint {staged_files} --fix
       stage_fixed: true
     - run: |
         git add \
          src/payload-types.ts \
          "src/app/(payload)/admin/importMap.js" \
          src/payload-generated-schema.ts
+
+    - run: pnpm test
+    - run: pnpm build

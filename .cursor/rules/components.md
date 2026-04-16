@@ -563,7 +563,7 @@ export function MyComponent() {
 ```
 
 ```scss
-// styles.scss
+// styles.css
 .my-component {
   background-color: var(--theme-elevation-500);
   color: var(--theme-text);

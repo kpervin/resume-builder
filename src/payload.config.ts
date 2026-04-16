@@ -34,7 +34,7 @@ export default buildConfig({
     UsersCollection,
   ],
   editor: lexicalEditor(),
-  secret: env.PAYLOAD_SECRET || "",
+  secret: env.PAYLOAD_SECRET,
   typescript: {
     outputFile: path.resolve(dirname, "payload-types.ts"),
   },
@@ -42,6 +42,7 @@ export default buildConfig({
     pool: {
       connectionString: env.DATABASE_URL || "",
     },
+    push: process.env.NODE_ENV === "development",
   }),
   sharp,
   plugins: [],

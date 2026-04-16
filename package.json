@@ -7,7 +7,7 @@
   "scripts": {
     "prepare": "lefthook install && pnpm codegen",
     "build": "next build",
-    "dev": "docker compose up -d --wait && next dev --no-server-fast-refresh",
+    "dev": "[ \"$NODE_ENV\" != \"test\" ] && pnpm docker:up; next dev --no-server-fast-refresh",
     "devsafe": "rm -rf .next && next dev",
     "generate:importmap": "payload generate:importmap",
     "generate:types": "payload generate:types",
@@ -19,8 +19,10 @@
     "fmt:check": "oxfmt --check",
     "payload": "payload",
     "start": "next start",
-    "test": "pnpm run test:int && pnpm run test:e2e",
-    "test:e2e": "playwright test --config=playwright.config.ts",
+    "docker:up": "docker compose -f docker-compose.${NODE_ENV:-local}.yml up -d --wait",
+    "docker:down": "docker compose -f docker-compose.${NODE_ENV:-local}.yml down",
+    "test": "NODE_ENV=test CI=true sh -c 'pnpm docker:up; pnpm run test:int && pnpm run test:e2e; pnpm docker:down'",
+    "test:e2e": "NODE_ENV=test sh -c 'pnpm docker:up; playwright test --config=playwright.config.ts; [ -z \"$CI\" ] && pnpm docker:down'",
     "test:int": "vitest run --config ./vitest.config.mts"
   },
   "dependencies": {
@@ -39,7 +41,7 @@
     "jsdom": "28.0.0",
     "next": "16.2.3",
     "payload": "3.81.0",
-    "playwright": "^1.59.1",
+    "playwright": "1.59.1",
     "postcss": "^8.5.9",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -49,7 +51,8 @@
     "valibot": "^1.3.1"
   },
   "devDependencies": {
-    "@playwright/test": "1.58.2",
+    "@faker-js/faker": "^10.4.0",
+    "@playwright/test": "1.59.1",
     "@testing-library/react": "16.3.0",
     "@types/jsdom": "^28.0.1",
     "@types/node": "22.19.9",

@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 @page {
-  size: Letter;
-  margin: 18mm;
+  size: letter;
+  margin: 0.75in; /* Standard 1-inch margins on all sides */
 }
 
 @layer base {
   html,
   body {
     @apply m-0 p-0;
-    @apply font-sans text-[11px] leading-[1.4];
+    @apply font-sans text-[12px] leading-[1.4];
     height: 100%;
     margin: 0;
   }
@@ -17,7 +17,6 @@
   h1,
   h2,
   h3,
-  p,
   ul,
   ol {
     @apply m-0;
@@ -25,10 +24,6 @@
 }
 
 @layer components {
-  .page {
-    @apply mx-auto w-full max-w-200;
-  }
-
   .header-name {
     @apply mb-4 mt-2;
     @apply text-[32px] font-normal tracking-tight;
@@ -39,7 +34,7 @@
   }
 
   .header-info-line {
-    @apply text-[11.5px];
+    @apply text-[12px];
   }
 
   .label-strong {
@@ -99,7 +94,7 @@
   }
 
   .item-description {
-    @apply text-justify text-[11.5px] leading-[1.35];
+    @apply text-[11.5px] leading-[1.35] text-pretty;
 
     :is(p, ul, ol) {
       @apply m-0 my-1;

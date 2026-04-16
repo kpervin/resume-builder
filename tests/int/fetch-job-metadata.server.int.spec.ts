@@ -1,14 +1,55 @@
+import { faker } from "@faker-js/faker";
 import config from "@payload-config";
-import { getPayload } from "payload";
-import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import { DataFromCollectionSlug, getPayload, Payload } from "payload";
+import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 
 import type { Location } from "@/payload-types";
 import { fetchJobMetadata } from "@/server-functions/job-metadata/fetch-job-metadata.server";
 
+const { mockGeminiResponse } = vi.hoisted(() => ({
+  mockGeminiResponse: {
+    text: JSON.stringify({
+      title: "Senior Developer",
+      company: "Tech Corp",
+      description: "A professional job summary...",
+      coverLetter: "## Cover Letter\nDear Hiring Manager...",
+      location: {
+        fullAddress: "123 Tech Lane, SF",
+        street: "123 Tech Lane",
+        city: "San Francisco",
+        province: "CA",
+        postalCode: "94105",
+      },
+    }),
+  },
+}));
+vi.mock("@google/genai", () => {
+  return {
+    GoogleGenAI: vi.fn(
+      class {
+        models = {
+          generateContent: vi.fn().mockResolvedValue(mockGeminiResponse),
+        };
+      },
+    ),
+    ApiError: class extends Error {
+      status: number;
+
+      constructor(message: string, status: number) {
+        super(message);
+        this.status = status;
+      }
+    },
+  };
+});
+
+vi.stubGlobal("fetch", vi.fn());
+
+let payload: Payload;
+
 describe("JobPostingUrlField fetchJobMetadata", async () => {
-  let payload: Awaited<ReturnType<typeof getPayload>>;
-  let applicant: Awaited<ReturnType<Awaited<ReturnType<typeof getPayload>>["create"]>>;
-  let resume: Awaited<ReturnType<Awaited<ReturnType<typeof getPayload>>["create"]>>;
+  let applicant: DataFromCollectionSlug<"applicants">;
+  let resume: DataFromCollectionSlug<"resumes">;
 
   beforeAll(async () => {
     payload = await getPayload({ config });
@@ -27,12 +68,12 @@ describe("JobPostingUrlField fetchJobMetadata", async () => {
       collection: "applicants",
       data: {
         name: {
-          firstName: "John",
-          lastName: "Doe",
+          firstName: faker.person.firstName(),
+          lastName: faker.person.lastName(),
         },
-        fullName: "John Doe",
-        phone: "555-0100",
+        phone: faker.phone.number(),
         location: address,
+        email: faker.internet.email(),
       },
     });
     resume = await payload.create({
@@ -41,9 +82,6 @@ describe("JobPostingUrlField fetchJobMetadata", async () => {
       data: {
         applicant: applicant.id,
         description: "Senior Full Stack Developer specializing in React and Node.js.",
-        _status: "published",
-
-        // This maps to the resumes_skill_sections table
         skillSections: [
           {
             category: "Frontend",
@@ -55,7 +93,6 @@ describe("JobPostingUrlField fetchJobMetadata", async () => {
           },
         ],
 
-        // This maps to the resumes_experience table
         experience: [
           {
             company: "Tech Solutions Inc",
@@ -63,14 +100,13 @@ describe("JobPostingUrlField fetchJobMetadata", async () => {
             startDate: new Date("2021-01-01").toISOString(),
             current: true,
             location: address,
-            // Payload RichText usually expects a Lexical or Slate JSON structure
             description: {
               root: {
                 type: "root",
                 children: [
                   {
                     type: "paragraph",
-                    children: [{ text: "Led a team of 5 developers to build a Next.js platform." }],
+                    children: [{ text: faker.lorem.paragraph() }],
                     version: 1,
                   },
                 ],
@@ -87,6 +123,7 @@ describe("JobPostingUrlField fetchJobMetadata", async () => {
   });
 
   afterAll(async () => {
+    vi.unstubAllGlobals();
     await payload.delete({
       collection: "resumes",
       id: resume.id,
@@ -95,23 +132,34 @@ describe("JobPostingUrlField fetchJobMetadata", async () => {
       collection: "applicants",
       id: applicant.id,
     });
-    await payload.db.destroy?.();
   });
 
-  test(
-    "should fetch job metadata from Indeed",
-    {
-      timeout: 100000,
-    },
-    async () => {
-      const targetUrl = "https://ca.indeed.com/?advn=7489099380595880&vjk=044c7873cf329c97";
-      await expect(fetchJobMetadata(targetUrl, resume.id)).resolves.toMatchObject(
-        expect.objectContaining({
-          title: expect.any(String),
-          company: expect.any(String),
-          url: `https://ca.indeed.com/viewjob?jk=044c7873cf329c97`,
+  test("should fetch job metadata from Indeed", async () => {
+    const targetUrl = "https://ca.indeed.com/?advn=7489099380595880&vjk=044c7873cf329c97";
+
+    vi.mocked(fetch).mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          solution: {
+            response:
+              "<html lang='en'><body><main><h1>Software Engineer</h1><p>Tech Corp</p></main></body></html>",
+          },
         }),
-      );
-    },
-  );
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
+      ),
+    );
+
+    const result = await fetchJobMetadata(targetUrl, resume.id);
+
+    expect(result).toMatchObject({
+      title: "Senior Developer",
+      company: "Tech Corp",
+      url: `https://ca.indeed.com/viewjob?jk=044c7873cf329c97`,
+    });
+
+    expect(fetch).toHaveBeenCalled();
+  });
 });
