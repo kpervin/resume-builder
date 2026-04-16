@@ -1,5 +1,7 @@
 import type { Route } from "next";
 
+import { env } from "@/env";
+
 const smallWords = /^(a|an|and|as|at|but|by|en|for|if|in|of|on|or|the|to|v\.?|via)$/i;
 
 export function toTitleCase(str: string) {
@@ -16,6 +18,6 @@ export function toTitleCase(str: string) {
 }
 
 export function generatePreviewUrl<T extends string>(path: Route<T>): string {
-  const baseUrl = process.env.PAYLOAD_PUBLIC_SITE_URL || "http://localhost:3000";
+  const baseUrl = env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   return `${baseUrl}${path}` as Route;
 }

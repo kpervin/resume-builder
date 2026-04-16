@@ -29,6 +29,7 @@
     "@payloadcms/next": "3.81.0",
     "@payloadcms/richtext-lexical": "3.81.0",
     "@payloadcms/ui": "3.81.0",
+    "@t3-oss/env-nextjs": "^0.13.11",
     "@tailwindcss/postcss": "^4.2.2",
     "@valibot/to-json-schema": "^1.6.0",
     "cheerio": "^1.2.0",

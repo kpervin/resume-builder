@@ -4,10 +4,14 @@ import { fileURLToPath } from "url";
 import { withPayload } from "@payloadcms/next/withPayload";
 import type { NextConfig } from "next";
 
+import "@/env";
+
 const __filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(__filename);
 
 const nextConfig: NextConfig = {
+  output: "standalone",
+  transpilePackages: ["@t3-oss/env-nextjs", "@t3-oss/env-core"],
   images: {
     localPatterns: [
       {
@@ -36,7 +40,6 @@ const nextConfig: NextConfig = {
   ],
   typedRoutes: true,
   experimental: {
-    typedEnv: true,
     authInterrupts: true,
   },
 };

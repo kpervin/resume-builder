@@ -14,9 +14,11 @@ import { getPayload } from "payload";
 import TurndownService from "turndown";
 import * as v from "valibot";
 
+import { env } from "@/env";
+
 import { getHandler } from "./job-handlers.server";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const ai = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const ResponseSchema = v.object({
@@ -73,7 +75,7 @@ export async function fetchJobMetadata(urlInput: string, resumeId: number) {
     const { handler, url } = getHandler(urlInput);
     const targetUrl = handler.normalize(url);
 
-    const res = await fetch(`${process.env.FLARESOLVERR_URL}/v1`, {
+    const res = await fetch(`${env.FLARESOLVERR_URL}/v1`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
