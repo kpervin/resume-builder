@@ -164,8 +164,6 @@ export async function fetchJobMetadata(urlInput: string, resumeId: number) {
 
     const parsed = JSON.parse(result.text);
 
-    console.log("Parsed Response:", parsed);
-
     const lowerTitle = String(parsed.title).toLowerCase();
     if (
       lowerTitle.includes("login") ||
