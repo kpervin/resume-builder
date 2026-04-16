@@ -6,7 +6,7 @@ import React from "react";
 
 import { ResumePrintView } from "./ResumePrintView";
 
-import "./styles.scss";
+import "./styles.css";
 
 export const runtime = "nodejs";
 

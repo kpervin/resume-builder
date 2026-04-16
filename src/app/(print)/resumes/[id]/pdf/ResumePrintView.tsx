@@ -1,23 +1,9 @@
 import { RichText } from "@payloadcms/richtext-lexical/react";
-import React, { FC } from "react";
+import React, { FC, ReactNode } from "react";
 
 import type { Applicant, Reference, Resume } from "@/payload-types";
 
 import { bestEffortNanpPhone, formatHeaderAddress, formatMonthYear } from "./helpers";
-
-function SummaryText({ text }: { text: string }) {
-  const lines = text.split("\n").map((l) => l.trimEnd());
-  return (
-    <div className="text-block">
-      {lines.map((line, idx) => (
-        <React.Fragment key={idx}>
-          {line}
-          {idx < lines.length - 1 ? <br /> : null}
-        </React.Fragment>
-      ))}
-    </div>
-  );
-}
 
 type ResumePrintViewProps = {
   resume: Resume;
@@ -25,7 +11,7 @@ type ResumePrintViewProps = {
   references: Reference[];
 };
 
-const HeaderInfoLine: FC<{ label: string; value: string | null }> = ({ label, value }) => {
+const HeaderInfoLine: FC<{ label: string; value: ReactNode | null }> = ({ label, value }) => {
   if (!value) return null;
   return (
     <p className="header-info-line">
@@ -52,13 +38,25 @@ export function ResumePrintView({ resume, applicant, references }: ResumePrintVi
         <HeaderInfoLine label="Address" value={address} />
         <HeaderInfoLine label="Phone" value={phone} />
         <HeaderInfoLine label="Email" value={email} />
-        {socialLinks.map((s, i) => (
-          <HeaderInfoLine key={i} label={s.label} value={s.url} />
-        ))}
+        {socialLinks.map((s, i) => {
+          const url = new URL(s.url);
+          return (
+            <HeaderInfoLine
+              key={i}
+              label={s.label}
+              value={
+                <a className={"text-nowrap"} href={s.url} target="_blank" rel="noopener noreferrer">
+                  {url.hostname}
+                  {url.pathname}
+                </a>
+              }
+            />
+          );
+        })}
       </div>
       <section>
         <h2 className="section-heading">Summary</h2>
-        <SummaryText text={String(resume.description ?? "").trim()} />
+        <p className="text-block">{String(resume.description ?? "").trim()}</p>
       </section>
 
       {(resume.skillSections ?? []).filter(Boolean).map((s, idx) => {
