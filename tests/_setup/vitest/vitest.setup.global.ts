@@ -6,7 +6,12 @@ export async function setup() {
   execSync("docker compose -f docker-compose.test.yml up -d --wait", {
     stdio: "inherit",
   });
-  execSync("pnpm payload migrate");
+  execSync("pnpm payload migrate", {
+    stdio: "inherit",
+    env: {
+      ...process.env,
+    },
+  });
 }
 
 export async function teardown() {
