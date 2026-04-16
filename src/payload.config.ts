@@ -10,6 +10,7 @@ import { ApplicantsCollection } from "@/collections/applicants.collection";
 import { JobApplicationsCollection } from "@/collections/job-applications.collection";
 import { ReferencesCollection } from "@/collections/references.collection";
 import { ResumesCollection } from "@/collections/resumes.collection";
+import { env } from "@/env";
 
 import { MediaCollection } from "./collections/media.collection";
 import { UsersCollection } from "./collections/users.collection";
@@ -33,13 +34,13 @@ export default buildConfig({
     UsersCollection,
   ],
   editor: lexicalEditor(),
-  secret: process.env.PAYLOAD_SECRET || "",
+  secret: env.PAYLOAD_SECRET || "",
   typescript: {
     outputFile: path.resolve(dirname, "payload-types.ts"),
   },
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URL || "",
+      connectionString: env.DATABASE_URL || "",
     },
   }),
   sharp,

@@ -1,8 +1,9 @@
-import { CollectionBeforeValidateHook, CollectionConfig, FieldHook } from "payload";
+import { CollectionBeforeValidateHook, CollectionConfig, FieldHook, Validate } from "payload";
 import * as v from "valibot";
 
 import { locationField, LocationParsers } from "@/fields/LocationField/location.field";
 import { Applicant } from "@/payload-types";
+import { Get } from "@/utils/types";
 
 export const ApplicantsCollection = {
   slug: "applicants",
@@ -67,9 +68,9 @@ export const ApplicantsCollection = {
           name: "url",
           type: "text",
           required: true,
-          validate: (value) => {
+          validate: ((value) => {
             return v.is(v.pipe(v.string(), v.url()), value) ? true : "Please enter a valid URL";
-          },
+          }) satisfies Validate<Get<Applicant, "socialLinks[number].url">>,
         },
       ],
     },
