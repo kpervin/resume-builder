@@ -1,0 +1,55 @@
+# --- Dependencies ---
+node_modules
+.pnpm-store
+.npm
+# Ignore the local proto installation directory
+.proto
+
+# --- Build Outputs ---
+.next
+out
+build
+dist
+*.tsbuildinfo
+
+# --- Tooling & Caches ---
+# moonrepo cache if you use moon
+.moon/cache
+.cache
+.eslintcache
+.stylelintcache
+
+# --- Environment & Secrets ---
+# Do NOT copy local secrets into the image
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+# Keep .env.example if you use it for documentation, otherwise ignore
+# .env.example
+
+# --- Docker & CI ---
+Dockerfile
+docker-compose*
+.dockerignore
+.github
+.git
+.gitignore
+
+# --- Logs ---
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- System Files ---
+.DS_Store
+Thumbs.db
+.vscode
+.idea
+*.swp
+*.swo

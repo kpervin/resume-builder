@@ -1,0 +1,63 @@
+services:
+  payload:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Runtime environment variables
+        - NODE_ENV=production
+        - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/payload
+        - PAYLOAD_SECRET=${PAYLOAD_SECRET}
+        - FLARESOLVERR_URL=flaresolverr:8191
+        - GEMINI_API_KEY=${GEMINI_API_KEY}
+        - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+    ports:
+      - "3000:3000"
+    container_name: resume-builder-app
+    restart: always
+    environment:
+      # Runtime environment variables
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/payload
+      - PAYLOAD_SECRET=${PAYLOAD_SECRET}
+      - FLARESOLVERR_URL=flaresolverr:8191
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      flaresolverr:
+        condition: service_started
+
+  postgres:
+    restart: always
+    image: postgres:latest
+    volumes:
+      - pgdata:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=payload
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d payload"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  flaresolverr:
+    # DockerHub mirror flaresolverr/flaresolverr:latest
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      - TZ=Europe/London
+    ports:
+      - "${PORT:-8191}:8191"
+    restart: unless-stopped
+
+volumes:
+  pgdata:
