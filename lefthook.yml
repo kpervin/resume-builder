@@ -1,5 +1,5 @@
 # yaml-language-server: $schema=./node_modules/lefthook/schema.json
-
+colors: false
 pre-commit:
   parallel: false
   jobs:
