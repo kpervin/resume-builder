@@ -180,7 +180,7 @@ export interface Resume {
     | {
         category: string;
         /**
-         * Add skills relevant to this category
+         * Add skills relevant
          */
         skills: string[];
         id?: string | null;
@@ -205,6 +205,10 @@ export interface Resume {
           };
           [k: string]: unknown;
         };
+        /**
+         * Add skills relevant
+         */
+        skills?: string[] | null;
         startDate: string;
         current?: boolean | null;
         endDate?: string | null;
@@ -485,6 +489,7 @@ export interface ResumesSelect<T extends boolean = true> {
         jobTitle?: T;
         company?: T;
         description?: T;
+        skills?: T;
         startDate?: T;
         current?: T;
         endDate?: T;

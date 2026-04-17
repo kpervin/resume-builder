@@ -42,7 +42,6 @@ export default buildConfig({
     pool: {
       connectionString: env.DATABASE_URL || "",
     },
-    push: process.env.NODE_ENV === "development",
   }),
   sharp,
   plugins: [],

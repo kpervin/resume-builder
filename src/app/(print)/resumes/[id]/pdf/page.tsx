@@ -4,7 +4,12 @@ import { unauthorized } from "next/navigation";
 import { getPayload } from "payload";
 import React from "react";
 
-import { ResumePrintView } from "./ResumePrintView";
+import { EducationItem } from "@/app/(print)/resumes/[id]/pdf/_components/EducationItem";
+import { HeaderInfoItem } from "@/app/(print)/resumes/[id]/pdf/_components/HeaderInfoItem";
+import { ReferenceItem } from "@/app/(print)/resumes/[id]/pdf/_components/ReferenceItem";
+import { SkillSection } from "@/app/(print)/resumes/[id]/pdf/_components/Skill";
+import { WorkExperienceItem } from "@/app/(print)/resumes/[id]/pdf/_components/WorkExperienceItem";
+import { bestEffortNanpPhone, formatHeaderAddress } from "@/app/(print)/resumes/[id]/pdf/helpers";
 
 import "./styles.css";
 
@@ -61,5 +66,64 @@ export default async function ResumePrintPage({ params }: Props) {
     )
   ).filter(Boolean);
 
-  return <ResumePrintView resume={resume} applicant={applicant} references={references} />;
+  const fullName =
+    applicant.fullName ||
+    `${applicant.name?.firstName ?? ""} ${applicant.name?.lastName ?? ""}`.trim() ||
+    "Resume";
+
+  const address = formatHeaderAddress(applicant);
+  const phone = bestEffortNanpPhone(applicant.phone);
+  const email = applicant.email;
+  const socialLinks = (applicant.socialLinks ?? []).filter((s) => s?.label && s?.url);
+
+  return (
+    <div className="page">
+      <h1 className="header-name">{fullName}</h1>
+      <div className="header-info-list">
+        <HeaderInfoItem label="Address" value={address} />
+        <HeaderInfoItem label="Phone" value={phone} />
+        <HeaderInfoItem label="Email" value={email} />
+        {socialLinks.map((s, i) => {
+          const url = new URL(s.url);
+          return (
+            <HeaderInfoItem
+              key={i}
+              label={s.label}
+              value={
+                <a className={"text-nowrap"} href={s.url} target="_blank" rel="noopener noreferrer">
+                  {url.hostname}
+                  {url.pathname}
+                </a>
+              }
+            />
+          );
+        })}
+      </div>
+      <section>
+        <h2 className="section-heading">Summary</h2>
+        <p className="text-block">{String(resume.description ?? "").trim()}</p>
+      </section>
+      {(resume.skillSections ?? []).filter(Boolean).map((s, idx) => (
+        <SkillSection key={idx} {...s} />
+      ))}
+      <section id={"work-experience"}>
+        <h2 className="section-heading">Work experience</h2>
+        {(resume.experience ?? []).filter(Boolean).map((e, idx) => (
+          <WorkExperienceItem key={idx} {...e} />
+        ))}
+      </section>
+      <section id={"education"}>
+        <h2 className="section-heading">Education</h2>
+        {(resume.education ?? []).filter(Boolean).map((ed, idx) => (
+          <EducationItem key={idx} {...ed} />
+        ))}
+      </section>
+      <section id={"references"}>
+        <h2 className="section-heading">References</h2>
+        {references.map((r, idx) => (
+          <ReferenceItem key={idx} {...r} />
+        ))}
+      </section>
+    </div>
+  );
 }
