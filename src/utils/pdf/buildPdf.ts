@@ -21,6 +21,7 @@ export async function buildPdfFromPreview<T extends string>(previewUrl: Route<T>
       format: "Letter",
       printBackground: true,
       displayHeaderFooter: false,
+      preferCSSPageSize: true,
       margin: {
         top: "18mm",
         bottom: "18mm",

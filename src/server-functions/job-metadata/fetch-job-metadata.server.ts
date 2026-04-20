@@ -122,7 +122,7 @@ export async function fetchJobMetadata(urlInput: string, resumeId: number) {
       - For 'description', summarize the requirements and responsibilities into a professional paragraph. Do not just copy/paste the whole page.
       - If the page requires a login, displays a "404", or is blocked, return a JSON that signals an error instead of guessing data.
       - Do not include any conversational filler. Return pure JSON.
-      - When fetching the location,  search for the company using Google Maps API while cross-referencing with the listing or other job postings by the company.
+      - When fetching the location, search for the company using Google Places API while cross-referencing with the listing to accurately gain their address.
 
       Follow this template as a guideline:
       \`\`\`markdown
