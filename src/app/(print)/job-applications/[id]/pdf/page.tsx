@@ -1,14 +1,13 @@
 import config from "@payload-config";
 import { RichText } from "@payloadcms/richtext-lexical/react";
+import { Metadata } from "next";
 import { headers as getHeaders } from "next/headers";
 import { unauthorized } from "next/navigation";
 import { getPayload } from "payload";
 
-export default async function JobApplicationPdfPage({
-  params,
-}: PageProps<"/job-applications/[id]/pdf">) {
-  const { id } = await params;
+type Props = PageProps<"/job-applications/[id]/pdf">;
 
+async function getDataById(id: string) {
   const headers = await getHeaders();
   const payload = await getPayload({ config });
   const { user } = await payload.auth({ headers });
@@ -41,9 +40,29 @@ export default async function JobApplicationPdfPage({
     new Date(application.updatedAt),
   );
 
+  return {
+    applicant,
+    application,
+    date,
+  };
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const { application, applicant } = await getDataById(id);
+  return {
+    title: `${applicant.fullName} - ${application.company} Cover Letter`,
+  };
+}
+
+export default async function JobApplicationPdfPage({ params }: Props) {
+  const { id } = await params;
+
+  const { applicant, application, date } = await getDataById(id);
+
   return (
     <article className="page">
-      <div className="address-block mb-[var(--space-after-paragraph)]">
+      <div className="address-block mb-(--space-after-paragraph)">
         <div>{applicant.fullName}</div>
         <div>{applicant.location.street}</div>
         <div>
@@ -55,7 +74,7 @@ export default async function JobApplicationPdfPage({
 
       <p>{date}</p>
 
-      <div className="address-block mb-[var(--space-after-paragraph)]">
+      <div className="address-block mb-(--space-after-paragraph)">
         <div>{application.company}</div>
         <div>{application.location.street}</div>
         <div>
@@ -63,11 +82,6 @@ export default async function JobApplicationPdfPage({
           {application.location.postalCode}
         </div>
       </div>
-
-      {/*
-          Payload RichText will now automatically add 12pt
-          between every paragraph it renders.
-      */}
       <RichText data={application.coverLetter} />
     </article>
   );

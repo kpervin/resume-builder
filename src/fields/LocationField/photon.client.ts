@@ -1,3 +1,5 @@
+// import { PlacesClient } from "@googlemaps/places";
+
 type PhotonFeatureProperties = {
   osm_type: "N" | "W" | "R";
   osm_id: number;
@@ -28,7 +30,7 @@ export type PhotonFeature = {
   };
 };
 
-type PhotonResponse = {
+export type PhotonResponse = {
   type: "FeatureCollection";
   features: PhotonFeature[];
 };
@@ -45,7 +47,7 @@ export type LocationFields = {
  * Strategy map for street formatting
  */
 const streetMappers: Record<string, (p: PhotonFeatureProperties) => string> = {
-  house: (p) => `${p.street || ""} ${p.housenumber || ""}`.trim(),
+  house: (p) => `${p.housenumber || ""} ${p.street || ""}`.trim(),
   street: (p) => p.name,
 };
 

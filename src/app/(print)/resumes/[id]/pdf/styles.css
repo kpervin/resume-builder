@@ -21,6 +21,11 @@
   ol {
     @apply m-0;
   }
+
+  h1,
+  h2 {
+    @apply font-bold;
+  }
 }
 
 @layer components {
@@ -46,7 +51,7 @@
     @apply mb-3 mt-7 pb-1;
     @apply flex items-center gap-2;
     @apply border-b-[1.5px] border-black dark:border-white;
-    @apply text-[14px] font-normal;
+    @apply text-[14px];
   }
 
   .section-icon {

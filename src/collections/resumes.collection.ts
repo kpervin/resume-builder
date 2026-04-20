@@ -3,6 +3,7 @@ import { CollectionBeforeChangeHook, CollectionConfig, Condition, Validate } fro
 import { ReferencesCollection } from "@/collections/references.collection";
 import { GeneratePDFButtonProps } from "@/components/buttons/GeneratePDFButton";
 import { locationField, LocationParsers } from "@/fields/LocationField/location.field";
+import { skillsField } from "@/fields/SkillsField/skills.field";
 import { Resume } from "@/payload-types";
 import { generatePreviewUrl, toTitleCase } from "@/utils/fns";
 
@@ -73,17 +74,8 @@ export const ResumesCollection = {
           type: "text",
           required: true,
         },
-        {
-          name: "skills",
-          type: "text",
-          hasMany: true,
+        skillsField({
           required: true,
-          admin: {
-            description: "Add skills relevant to this category",
-            components: {
-              Field: "/components/textfields/SplitTextOnPasteTextField.client",
-            },
-          },
           validate: ((value, options) => {
             const { data } = options;
             const allSections = data.skillSections || [];
@@ -102,7 +94,7 @@ export const ResumesCollection = {
             }
             return true;
           }) satisfies Validate<string[], Resume, NonNullable<Resume["skillSections"]>[number]>,
-        },
+        }),
       ],
     },
     {
@@ -120,6 +112,7 @@ export const ResumesCollection = {
           type: "richText",
           required: true,
         },
+        skillsField(),
         {
           name: "startDate",
           type: "date",
