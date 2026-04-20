@@ -34,7 +34,7 @@ export const locationField = <T extends string>(
       admin: {
         components: {
           Field: {
-            path: "/fields/LocationField/LocationAutocompleteField.tsx",
+            path: "/fields/LocationField/LocationAutocompleteField.client.tsx",
             clientProps: { template },
           },
         },

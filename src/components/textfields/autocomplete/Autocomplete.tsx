@@ -1,11 +1,13 @@
 "use client";
 
 import { FieldLabel, TextInput, type TextInputProps } from "@payloadcms/ui";
-import React, { type ChangeEvent, useRef, useState } from "react";
+import React, { type ChangeEvent, useId, useRef, useState } from "react";
+
+import { useDebouncedCallback } from "@/hooks/useDebounce";
 
 import styles from "./Autocomplete.module.scss";
 
-type AutocompleteProps<T> = Omit<TextInputProps, "htmlAttributes" | "onChange"> & {
+export type AutocompleteProps<T> = Omit<TextInputProps, "htmlAttributes" | "onChange"> & {
   fetchSuggestions: (query: string) => Promise<T[]>;
   renderItem: (item: T) => React.ReactNode;
   onSelect: (item: T) => void;
@@ -17,6 +19,7 @@ type AutocompleteProps<T> = Omit<TextInputProps, "htmlAttributes" | "onChange"> 
   autocomplete?: NonNullable<TextInputProps["htmlAttributes"]>["autoComplete"];
   /** Payload path forwarded to TextInput; defaults to "autocomplete-input" */
   path: string;
+  keyMapper?: (item: T) => string;
 };
 
 export function Autocomplete<T>({
@@ -30,46 +33,44 @@ export function Autocomplete<T>({
   debounceMs = 100,
   autocomplete,
   path,
+  keyMapper,
   ...props
 }: AutocompleteProps<T>) {
+  const id = useId().replace(/:/g, "");
   const [results, setResults] = useState<T[]>([]);
   const popoverRef = useRef<HTMLUListElement>(null);
 
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const getSuggestions = useDebouncedCallback(async (text: string) => {
+    try {
+      const res = await fetchSuggestions(text);
+      setResults(res);
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+      const el = popoverRef.current;
+      if (el) {
+        if (res.length > 0 && !el.matches(":popover-open")) {
+          el.showPopover();
+        } else if (res.length === 0 && el.matches(":popover-open")) {
+          el.hidePopover();
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching address:", error);
+    }
+  }, debounceMs);
+
+  const handleInputChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;
     onChange(text);
-
-    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
 
     if (!text) {
       setResults([]);
       if (popoverRef.current?.matches(":popover-open")) popoverRef.current.hidePopover();
       return;
     }
-
-    debounceTimerRef.current = setTimeout(async () => {
-      try {
-        const res = await fetchSuggestions(text);
-        setResults(res);
-
-        const el = popoverRef.current;
-        if (el) {
-          if (res.length > 0 && !el.matches(":popover-open")) {
-            el.showPopover();
-          } else if (res.length === 0 && el.matches(":popover-open")) {
-            el.hidePopover();
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching address:", error);
-      }
-    }, debounceMs);
+    getSuggestions(text);
   };
 
   const handleSelect = (item: T) => {
-    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
     onSelect(item);
     const el = popoverRef.current;
     if (el && el.matches(":popover-open")) {
@@ -78,7 +79,10 @@ export function Autocomplete<T>({
   };
 
   return (
-    <div className={styles.wrapper}>
+    <div
+      className={styles.wrapper}
+      style={{ "--autocomplete-input": `--anchor-${id}` } as React.CSSProperties}
+    >
       <FieldLabel path={path} label={label} required={props.required} />
       <div className={styles.textInput}>
         <TextInput
@@ -87,13 +91,19 @@ export function Autocomplete<T>({
           value={value || ""}
           onChange={handleInputChange}
           placeholder={placeholder}
-          {...(autocomplete && { htmlAttributes: { autoComplete: autocomplete } })}
+          {...(autocomplete && {
+            htmlAttributes: { autoComplete: autocomplete },
+          })}
           hasMany={false}
         />
       </div>
       <ul ref={popoverRef} popover="auto" className={styles.dropdown}>
         {results.map((item, i) => (
-          <li className={styles.dropdownItem} key={i} onClick={() => handleSelect(item)}>
+          <li
+            className={styles.dropdownItem}
+            key={keyMapper?.(item) ?? `${id}-${i}`}
+            onClick={() => handleSelect(item)}
+          >
             {renderItem(item)}
           </li>
         ))}
