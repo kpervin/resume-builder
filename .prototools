@@ -1,5 +1,6 @@
-node = "lts"
-pnpm = "latest"
+node = "24.15.0"
+pnpm = "10.33.0"
+moon = "2.2.2"
 
 [settings]
 auto-install = true

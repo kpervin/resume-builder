@@ -6,7 +6,7 @@ import { getPayload } from "payload";
 import "../setup.env";
 
 export async function setup() {
-  execSync("docker compose -f docker-compose.test.yml up -d --wait", {
+  execSync("pnpm docker:up", {
     stdio: "inherit",
   });
   /**
@@ -19,7 +19,7 @@ export async function setup() {
 
 export async function teardown() {
   if (!process.env.CI) {
-    execSync("docker compose -f docker-compose.test.yml down", {
+    execSync("pnpm docker:down", {
       stdio: "inherit",
     });
   }

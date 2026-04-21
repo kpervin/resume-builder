@@ -1,0 +1,63 @@
+$schema: "https://moonrepo.dev/schemas/project.json"
+
+tasks:
+  lint:
+    command: "pnpm exec oxlint ."
+
+  fmt:
+    command: "pnpm fmt:check"
+    inputs:
+      - "src/**/*.ts"
+      - "src/**/*.tsx"
+      - ".oxfmtrc.json"
+
+  codegen:
+    command: "pnpm codegen"
+    inputs:
+      - "src/collections/**/*"
+      - "src/payload.config.ts"
+    outputs:
+      - "src/payload-types.ts"
+      - "src/app/(payload)/admin/importMap.js"
+      - ".next/types/*.d.ts"
+
+  build:
+    command: "pnpm run build"
+    inputs:
+      - "src/**/*"
+      - "next.config.ts"
+      - "tsconfig.json"
+    outputs:
+      - ".next"
+    deps:
+      - "codegen"
+
+  test-unit:
+    command: "pnpm test:int"
+    env:
+      POSTGRES_PORT: "5433"
+      FLARESOLVERR_PORT: "8193"
+    inputs:
+      - "src/**/*"
+      - "tests/int/**/*"
+      - "tests/_setup/vitest/**/*"
+      - "vitest.config.mts"
+    deps:
+      - "codegen"
+
+  test-e2e:
+    command: "pnpm test:e2e"
+    env:
+      POSTGRES_PORT: "5434"
+      FLARESOLVERR_PORT: "8194"
+    inputs:
+      - "src/**/*"
+      - "tests/e2e/**/*"
+      - "playwright.config.ts"
+    deps:
+      - "codegen"
+
+  test:
+    deps:
+      - "test-unit"
+      - "test-e2e"

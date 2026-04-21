@@ -18,31 +18,33 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: moonrepo/setup-toolchain@v0
+
+      - name: Install toolchain
+        uses: moonrepo/setup-toolchain@v0
         with:
           auto-install: true
 
-      - run: proto use
+      - name: Cache moon artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            .moon/cache/hashes
+            .moon/cache/outputs
+          key: ${{ runner.os }}-moon-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-moon-
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint changed files with oxlint
-        shell: bash
-        run: |
-          FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | xargs)
-          if [ -n "$FILES" ]; then
-            echo "Linting changed files: $FILES"
-            pnpm exec oxlint $FILES
-          else
-            echo "No files changed in this PR. Skipping lint."
-          fi
+      - name: Lint
+        run: moon run lint
 
       - name: Build
-        run: pnpm run build
+        run: moon run build
 
       - name: Install Playwright Browsers
         run: pnpx playwright install --with-deps
 
       - name: Test
-        run: pnpm run test
+        run: moon run test

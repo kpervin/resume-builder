@@ -1,0 +1,7 @@
+projects:
+  app: "."
+
+vcs:
+  client: "git"
+  defaultBranch: "main"
+  provider: "github"
