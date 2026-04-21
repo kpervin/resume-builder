@@ -38,13 +38,13 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: moon run lint
+        run: moon run :lint
 
       - name: Build
-        run: moon run build
+        run: moon run :build
 
       - name: Install Playwright Browsers
         run: pnpx playwright install --with-deps
 
       - name: Test
-        run: moon run test
+        run: moon run :test

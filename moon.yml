@@ -35,6 +35,7 @@ tasks:
   test-unit:
     command: "pnpm test:int"
     env:
+      COMPOSE_PROJECT_NAME: "resume-builder-unit"
       POSTGRES_PORT: "5433"
       FLARESOLVERR_PORT: "8193"
     inputs:
@@ -48,6 +49,7 @@ tasks:
   test-e2e:
     command: "pnpm test:e2e"
     env:
+      COMPOSE_PROJECT_NAME: "resume-builder-e2e"
       POSTGRES_PORT: "5434"
       FLARESOLVERR_PORT: "8194"
     inputs:
