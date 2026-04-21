@@ -28,10 +28,11 @@ const ResponseSchema = v.object({
   coverLetter: v.pipe(v.string(), v.nonEmpty()),
   location: v.object({
     fullAddress: v.string(),
-    street: v.string(),
+    street: v.optional(v.string()),
     city: v.string(),
     province: v.string(),
-    postalCode: v.string(),
+    postalCode: v.optional(v.string()),
+    country: v.string(),
   }),
 });
 
@@ -160,7 +161,6 @@ export async function fetchJobMetadata(urlInput: string, resumeId: number) {
       - Create a cover letter based on the resume provided and the description of the job. Go for high ATS score.
       - Ensure the cover letter is professional and tailored to the job description.
       - Ensure the cover letter is formatted in markdown with paragraphs and proper spacing.
-      - If a field is not present, use "Not specified".
       - For 'title', remove internal reference codes (e.g., "#12345").
       - For 'description', summarize the requirements and responsibilities into a professional paragraph. Do not just copy/paste the whole page.
       - If the page requires a login, displays a "404", or is blocked, return a JSON that signals an error instead of guessing data.

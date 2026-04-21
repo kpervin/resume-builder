@@ -1,7 +1,7 @@
 "use client";
 
 import { FieldLabel, TextInput, type TextInputProps } from "@payloadcms/ui";
-import React, { type ChangeEvent, useId, useRef, useState } from "react";
+import React, { type ChangeEvent, useCallback, useId, useRef, useState } from "react";
 
 import { useDebouncedCallback } from "@/hooks/useDebounce";
 
@@ -40,23 +40,29 @@ export function Autocomplete<T>({
   const [results, setResults] = useState<T[]>([]);
   const popoverRef = useRef<HTMLUListElement>(null);
 
-  const getSuggestions = useDebouncedCallback(async (text: string) => {
-    try {
-      const res = await fetchSuggestions(text);
-      setResults(res);
+  const getSuggestions = useDebouncedCallback(
+    useCallback(
+      async (text: string) => {
+        try {
+          const res = await fetchSuggestions(text);
+          setResults(res);
 
-      const el = popoverRef.current;
-      if (el) {
-        if (res.length > 0 && !el.matches(":popover-open")) {
-          el.showPopover();
-        } else if (res.length === 0 && el.matches(":popover-open")) {
-          el.hidePopover();
+          const el = popoverRef.current;
+          if (el) {
+            if (res.length > 0 && !el.matches(":popover-open")) {
+              el.showPopover();
+            } else if (res.length === 0 && el.matches(":popover-open")) {
+              el.hidePopover();
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching address:", error);
         }
-      }
-    } catch (error) {
-      console.error("Error fetching address:", error);
-    }
-  }, debounceMs);
+      },
+      [fetchSuggestions],
+    ),
+    debounceMs,
+  );
 
   const handleInputChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;
