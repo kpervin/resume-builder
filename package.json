@@ -21,7 +21,7 @@
     "start": "next start",
     "docker:up": "docker compose -f docker-compose.${NODE_ENV:-local}.yml up -d --wait",
     "docker:down": "docker compose -f docker-compose.${NODE_ENV:-local}.yml down",
-    "test": "NODE_ENV=test CI=true sh -c 'pnpm docker:up; pnpm run test:int && pnpm run test:e2e; EXIT=$?; pnpm docker:down; exit $EXIT'",
+    "test": "NODE_ENV=test CI=true sh -c 'pnpm docker:up; pnpm run test:int; INT=$?; pnpm run test:e2e; E2E=$?; pnpm docker:down; exit $((INT || E2E))'",
     "test:e2e": "NODE_ENV=test sh -c 'pnpm docker:up; playwright test --config=playwright.config.ts; EXIT=$?; [ -z \"$CI\" ] && pnpm docker:down; exit $EXIT'",
     "test:int": "vitest run --config ./vitest.config.mts"
   },
