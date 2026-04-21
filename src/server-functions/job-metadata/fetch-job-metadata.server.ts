@@ -28,10 +28,11 @@ const ResponseSchema = v.object({
   coverLetter: v.pipe(v.string(), v.nonEmpty()),
   location: v.object({
     fullAddress: v.string(),
-    street: v.string(),
+    street: v.optional(v.string()),
     city: v.string(),
     province: v.string(),
-    postalCode: v.string(),
+    postalCode: v.optional(v.string()),
+    country: v.string(),
   }),
 });
 
@@ -40,26 +41,55 @@ const JsonSchema = toJsonSchema(ResponseSchema);
 function convertToTokenEfficientMarkdown(rawHtml: string) {
   const $ = cheerio.load(rawHtml);
 
+  // 1. EXTRACT STRUCTURED METADATA (The "Source of Truth")
+  let structuredData = "";
+
+  // Try to find JSON-LD (Workday uses this for Google Jobs)
+  const jsonLdScript = $('script[type="application/ld+json"]').html();
+  if (jsonLdScript) {
+    const parsed = JSON.parse(jsonLdScript);
+    structuredData += `
+      OFFICIAL METADATA (JSON-LD):
+      Title: ${parsed.title}
+      Company: ${parsed.hiringOrganization?.name}
+      Location: ${parsed.jobLocation?.address?.addressLocality}, ${parsed.jobLocation?.address?.addressCountry}
+      Date Posted: ${parsed.datePosted}
+    `;
+  }
+
+  const ogTitle = $('meta[property="og:title"]').attr("content");
+  const ogDescription = $('meta[property="og:description"]').attr("content");
+
+  if (ogTitle && !structuredData.includes(ogTitle)) {
+    structuredData += `META TITLE: ${ogTitle}\n`;
+  }
+  if (ogDescription && !structuredData.includes(ogDescription)) {
+    structuredData += `META DESCRIPTION: ${ogDescription}\n`;
+  }
+
   $("script, style, noscript, svg, path, img, iframe, meta, link").remove();
-
   $('header, footer, nav, aside, [role="dialog"]').remove();
-
   $(".visually-hidden").remove();
 
-  const mainHtml = $("main").html() ?? $("body").html();
+  const mainHtml = $("main").html() ?? $("[role='main']").html() ?? $("body").html();
 
-  if (!mainHtml) return null;
+  if (!mainHtml) return structuredData || null;
 
   const turndownService = new TurndownService({
     headingStyle: "atx",
-    codeBlockStyle: "fenced",
+    hr: "---",
+    bulletListMarker: "-",
   });
 
-  let markdown = turndownService.turndown(mainHtml);
+  const bodyMarkdown = turndownService.turndown(mainHtml);
 
-  markdown = markdown.replace(/\n{3,}/g, "\n\n").trim();
-
-  return markdown;
+  return /* markdown */ `
+    ---
+    ${structuredData}
+    ---
+    JOB DESCRIPTION CONTENT:
+    ${bodyMarkdown}
+  `.trim();
 }
 
 export async function fetchJobMetadata(urlInput: string, resumeId: number) {
@@ -69,6 +99,14 @@ export async function fetchJobMetadata(urlInput: string, resumeId: number) {
     collection: "resumes",
     id: resumeId,
   });
+
+  const applicant =
+    typeof resume.applicant === "number"
+      ? await payload.findByID({
+          collection: "applicants",
+          id: resume.applicant,
+        })
+      : resume.applicant;
 
   try {
     new URL(urlInput);
@@ -110,19 +148,29 @@ export async function fetchJobMetadata(urlInput: string, resumeId: number) {
     `;
 
     const prompt = `
-      You are an expert Data Analyst. Your task is to scrape job posting data from the provided content.
+      You are an expert Data Analyst.
+      I have provided a markdown version of a job posting.
+      It contains a "OFFICIAL METADATA" section and a "JOB DESCRIPTION CONTENT" section.
+
+      You have also been provided with a resume in JSON format as well as an applicant in JSON format.
 
       INSTRUCTIONS:
+      - Use the "OFFICIAL METADATA" section as the primary source for the 'company', 'title', and 'location' fields.
+      - Use the "JOB DESCRIPTION CONTENT" to summarize the role and generate the cover letter.
       - Extract the job title, company name, location, and a summary of the job description from the markdown content.
       - Create a cover letter based on the resume provided and the description of the job. Go for high ATS score.
       - Ensure the cover letter is professional and tailored to the job description.
       - Ensure the cover letter is formatted in markdown with paragraphs and proper spacing.
-      - If a field is not present, use "Not specified".
       - For 'title', remove internal reference codes (e.g., "#12345").
       - For 'description', summarize the requirements and responsibilities into a professional paragraph. Do not just copy/paste the whole page.
       - If the page requires a login, displays a "404", or is blocked, return a JSON that signals an error instead of guessing data.
       - Do not include any conversational filler. Return pure JSON.
       - When fetching the location, search for the company using Google Places API while cross-referencing with the listing to accurately gain their address.
+        - If you cannot find the address via the Google Places API (while ensuring that the address is accurate and matches the company), return the city/province/country instead.
+        - If multiple addresses are present, match the location closest to the provided applicant's listed address.
+      - DO NOT UNDER ANY CIRCUMSTANCES include any sort of description of skills that are not directly provided via the included resume.
+      - Please keep the cover letter addressee generic (i.e. Hiring Team, "To Whom it may concern", etc.) in accordance to professional standards.
+      - Try not to mention education unless absolutely necessary and relevant to ATS score.
 
       Follow this template as a guideline:
       \`\`\`markdown
@@ -140,7 +188,7 @@ export async function fetchJobMetadata(urlInput: string, resumeId: number) {
       try {
         return await ai.models.generateContent({
           model: "gemini-3-flash-preview",
-          contents: JSON.stringify({ markdown, resume }),
+          contents: JSON.stringify({ markdown, resume, applicant }),
           config: {
             tools: [{ urlContext: {} }],
             responseMimeType: "application/json",

@@ -1,4 +1,4 @@
-import { default as default_46bf42cc7dbb455ba64eaad6e83b94d5 } from '../../../fields/LocationField/LocationAutocompleteField.tsx'
+import { default as default_fa4f69f17a82ee7fe7dd8f65a942e25f } from '../../../fields/LocationField/LocationAutocompleteField.client.tsx'
 import { default as default_ded0d7cfffc97b355d855f5ab217a1d7 } from '../../../components/TransparentGroup.tsx'
 import { default as default_13e222f2c21cd5a5e4f1e5e0c788543d } from '../../../fields/PhoneField/PhoneField.tsx'
 import { default as default_b2efe438029b19f9ada86e44526600ad } from '../../../components/textfields/SplitTextOnPasteTextField.client'
@@ -30,7 +30,7 @@ import { default as default_fa427152ebef7bbd59b2f7f2b1fc97c3 } from '../../../co
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 export const importMap = {
-  "/fields/LocationField/LocationAutocompleteField.tsx#default": default_46bf42cc7dbb455ba64eaad6e83b94d5,
+  "/fields/LocationField/LocationAutocompleteField.client.tsx#default": default_fa4f69f17a82ee7fe7dd8f65a942e25f,
   "/components/TransparentGroup.tsx#default": default_ded0d7cfffc97b355d855f5ab217a1d7,
   "/fields/PhoneField/PhoneField.tsx#default": default_13e222f2c21cd5a5e4f1e5e0c788543d,
   "/components/textfields/SplitTextOnPasteTextField.client#default": default_b2efe438029b19f9ada86e44526600ad,

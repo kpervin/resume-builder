@@ -1,6 +1,6 @@
 import { Location } from "@/payload-types";
 
-type LocationParts = Omit<Location, "search">;
+type LocationParts = Omit<Location, "fullAddress">;
 
 type ValidKey = keyof LocationParts;
 

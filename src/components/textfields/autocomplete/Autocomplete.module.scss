@@ -3,11 +3,11 @@
 }
 
 .textInput {
-  anchor-name: --autocomplete-input;
+  anchor-name: var(--autocomplete-input);
 }
 
 .dropdown {
-  position-anchor: --autocomplete-input;
+  position-anchor: var(--autocomplete-input);
   position-area: bottom span-all;
   top: calc(anchor(bottom) + 4px);
   left: anchor(left);
@@ -22,6 +22,10 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   max-height: 200px;
   overflow-y: auto;
+
+  &:popover-open {
+    display: block;
+  }
 }
 
 .dropdownItem {
