@@ -1,10 +1,12 @@
 import { faker } from "@faker-js/faker";
 import config from "@payload-config";
 import { DataFromCollectionSlug, getPayload, Payload } from "payload";
+import * as v from "valibot";
 import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
 
 import type { Location } from "@/payload-types";
 import { fetchJobMetadata } from "@/server-functions/job-metadata/fetch-job-metadata.server";
+import { ResponseSchema } from "@/server-functions/job-metadata/response.schema";
 
 const { mockGeminiResponse } = vi.hoisted(() => ({
   mockGeminiResponse: {
@@ -19,8 +21,9 @@ const { mockGeminiResponse } = vi.hoisted(() => ({
         city: "San Francisco",
         province: "CA",
         postalCode: "94105",
+        country: "US",
       },
-    }),
+    } satisfies v.InferOutput<typeof ResponseSchema>),
   },
 }));
 vi.mock("@google/genai", () => {
