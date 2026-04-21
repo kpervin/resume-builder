@@ -8,35 +8,18 @@ import {
   getEnabledNodes,
 } from "@payloadcms/richtext-lexical";
 import { createHeadlessEditor } from "@payloadcms/richtext-lexical/lexical/headless";
-import { toJsonSchema } from "@valibot/to-json-schema";
 import * as cheerio from "cheerio";
 import { getPayload } from "payload";
 import TurndownService from "turndown";
 import * as v from "valibot";
 
 import { env } from "@/env";
+import { JsonSchema, ResponseSchema } from "@/server-functions/job-metadata/response.schema";
 
 import { getHandler } from "./job-handlers.server";
 
 const ai = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-const ResponseSchema = v.object({
-  title: v.pipe(v.string(), v.minLength(3)),
-  company: v.pipe(v.string(), v.minLength(1)),
-  description: v.pipe(v.string(), v.minLength(20), v.maxLength(2000)),
-  coverLetter: v.pipe(v.string(), v.nonEmpty()),
-  location: v.object({
-    fullAddress: v.string(),
-    street: v.optional(v.string()),
-    city: v.string(),
-    province: v.string(),
-    postalCode: v.optional(v.string()),
-    country: v.string(),
-  }),
-});
-
-const JsonSchema = toJsonSchema(ResponseSchema);
 
 function convertToTokenEfficientMarkdown(rawHtml: string) {
   const $ = cheerio.load(rawHtml);
