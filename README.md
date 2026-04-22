@@ -246,5 +246,3 @@ This updated preview now accurately reflects:
 - ✅ Proto version management
 - ✅ Comprehensive contributing guidelines
 - ✅ Actual available npm scripts
-
-Would you like me to push this to your repository?
