@@ -1,5 +1,5 @@
 name: Setup
-description: Install toolchain, restore caches, install deps
+description: Install toolchain, restore caches, and install dependencies
 
 runs:
   using: composite
@@ -12,7 +12,7 @@ runs:
     - name: Get pnpm store path
       id: pnpm-cache
       shell: bash
-      run: echo "store=$(pnpm store path)" >> $GITHUB_OUTPUT
+      run: echo "store=$(pnpm store path --silent 2>/dev/null | tail -1)" >> $GITHUB_OUTPUT
 
     - name: Cache pnpm store
       uses: actions/cache@v4
