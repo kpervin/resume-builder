@@ -8,6 +8,4 @@ pre-commit:
     format:
       run: pnpm exec oxfmt {staged_files}
     build:
-      run: |
-        moon run :codegen;
-        moon run :build;
+      run: moon run :build;
