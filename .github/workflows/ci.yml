@@ -38,13 +38,14 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.2-noble
+      options: --user 1001
     needs: build
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup
-      - name: Install Playwright browsers
-        run: pnpx playwright install --with-deps
       - name: Test
         run: moon run :test
