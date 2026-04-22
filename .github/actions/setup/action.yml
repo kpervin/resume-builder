@@ -1,0 +1,37 @@
+name: Setup
+description: Install toolchain, restore caches, install deps
+
+runs:
+  using: composite
+  steps:
+    - name: Install toolchain
+      uses: moonrepo/setup-toolchain@v0
+      with:
+        auto-install: true
+
+    - name: Get pnpm store path
+      id: pnpm-cache
+      shell: bash
+      run: echo "store=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+    - name: Cache pnpm store
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.pnpm-cache.outputs.store }}
+        key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-
+
+    - name: Cache moon artifacts
+      uses: actions/cache@v4
+      with:
+        path: |
+          .moon/cache/hashes
+          .moon/cache/outputs
+        key: ${{ runner.os }}-moon-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-moon-
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile
