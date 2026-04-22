@@ -3,24 +3,30 @@ import { execSync } from "node:child_process";
 import config from "@payload-config";
 import { getPayload } from "payload";
 
-import "../setup.env";
+process.env.COMPOSE_PROJECT_NAME = "resume-builder-vitest";
 
 export async function setup() {
-  execSync("docker compose -f docker-compose.test.yml up -d --wait", {
+  execSync("pnpm docker:up", {
     stdio: "inherit",
   });
   /**
    * We are going to get a timeout regardless for the time being until
    * https://github.com/payloadcms/payload/issues/15674 is resolved
    */
-  const payload = await getPayload({ config });
-  await payload.db.destroy?.();
+  await getPayload({
+    config,
+    onInit: async (payload) => {
+      payload.db.pool.on("error", (err) => {
+        console.error("Unexpected error on idle client", err);
+        process.exit(0);
+      });
+      await payload.destroy();
+    },
+  });
 }
 
 export async function teardown() {
-  if (!process.env.CI) {
-    execSync("docker compose -f docker-compose.test.yml down", {
-      stdio: "inherit",
-    });
-  }
+  execSync("pnpm docker:cleanup", {
+    stdio: "inherit",
+  });
 }

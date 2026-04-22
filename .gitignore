@@ -48,3 +48,7 @@ node_modules/
 /playwright/.cache/
 
 *.db
+
+# moon
+.moon/cache
+.moon/docker

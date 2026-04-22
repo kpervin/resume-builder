@@ -1,0 +1,8 @@
+typescript:
+  includeProjectReferenceSources: true
+  includeSharedTypes: true
+  syncProjectReferences: true
+  syncProjectReferencesToPaths: true
+node: {}
+
+pnpm: {}

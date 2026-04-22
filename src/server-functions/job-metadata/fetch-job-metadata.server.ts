@@ -226,11 +226,7 @@ export async function fetchJobMetadata(urlInput: string, resumeId: number) {
 
     const coverLetterLexical = headlessEditor.getEditorState().toJSON();
 
-    const response = { ...json, coverLetterLexical, url: targetUrl };
-
-    console.log("Response:", response);
-
-    return response;
+    return { ...json, coverLetterLexical, url: targetUrl };
   } catch (error) {
     console.error("Scraping error:", error);
     return null;
