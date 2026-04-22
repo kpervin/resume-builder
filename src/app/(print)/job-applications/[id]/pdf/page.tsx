@@ -5,6 +5,8 @@ import { headers as getHeaders } from "next/headers";
 import { unauthorized } from "next/navigation";
 import { getPayload } from "payload";
 
+import { formatPhoneNumber } from "@/fields/PhoneField/utils";
+
 type Props = PageProps<"/job-applications/[id]/pdf">;
 
 async function getDataById(id: string) {
@@ -68,8 +70,12 @@ export default async function JobApplicationPdfPage({ params }: Props) {
         <div>
           {applicant.location.city}, {applicant.location.state} {applicant.location.postalCode}
         </div>
-        <div>{applicant.phone}</div>
-        <div>{applicant.email}</div>
+        <div>
+          <a href={`tel:${applicant.phone ?? ""}`}>{formatPhoneNumber(applicant.phone ?? "")}</a>
+        </div>
+        <div>
+          <a href={`mailto:${applicant.email ?? ""}`}>{applicant.email}</a>
+        </div>
       </div>
 
       <p>{date}</p>

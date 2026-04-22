@@ -241,6 +241,7 @@ export interface Reference {
   contactMethods: {
     type?: ('phone' | 'email') | null;
     email?: string | null;
+    phone?: string | null;
     id?: string | null;
   }[];
   updatedAt: string;
@@ -522,6 +523,7 @@ export interface ReferencesSelect<T extends boolean = true> {
     | {
         type?: T;
         email?: T;
+        phone?: T;
         id?: T;
       };
   updatedAt?: T;

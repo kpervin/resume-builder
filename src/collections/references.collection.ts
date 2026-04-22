@@ -50,6 +50,18 @@ export const ReferencesCollection = {
             ),
           },
         },
+        {
+          name: "phone",
+          type: "text",
+          admin: {
+            condition: condition<Reference, Get<Reference, "contactMethods[]">>(
+              (_, siblingData) => siblingData?.type === "phone",
+            ),
+            components: {
+              Field: "/fields/PhoneField/PhoneField.tsx",
+            },
+          },
+        },
       ],
     },
   ],

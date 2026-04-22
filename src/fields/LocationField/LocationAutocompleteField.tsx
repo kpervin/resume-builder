@@ -45,7 +45,7 @@ function parseAddressComponents(
   };
 }
 
-function LocationAutocompleteFieldClient({
+function LocationAutocompleteField({
   path,
   field,
   template,
@@ -66,6 +66,7 @@ function LocationAutocompleteFieldClient({
           place.formattedAddress ?? "",
         );
         setValue(parseLocationTemplate(template, locationData));
+        console.log("locationData", locationData);
         dispatchFields({
           type: "UPDATE_MANY",
           formState: locationFields(basePath, {
@@ -100,4 +101,4 @@ function LocationAutocompleteFieldClient({
   );
 }
 
-export default LocationAutocompleteFieldClient;
+export default LocationAutocompleteField;

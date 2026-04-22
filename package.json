@@ -7,7 +7,7 @@
   "scripts": {
     "prepare": "lefthook install && pnpm codegen",
     "build": "next build",
-    "dev": "next dev --no-server-fast-refresh",
+    "dev": "pnpm docker:up; next dev --no-server-fast-refresh",
     "devsafe": "rm -rf .next && next dev",
     "generate:importmap": "payload generate:importmap",
     "generate:types": "payload generate:types",

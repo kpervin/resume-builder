@@ -154,6 +154,8 @@ export async function fetchJobMetadata(urlInput: string, resumeId: number) {
       - DO NOT UNDER ANY CIRCUMSTANCES include any sort of description of skills that are not directly provided via the included resume.
       - Please keep the cover letter addressee generic (i.e. Hiring Team, "To Whom it may concern", etc.) in accordance to professional standards.
       - Try not to mention education unless absolutely necessary and relevant to ATS score.
+      - Add some human element to make it less dry.
+      - Try not to use em-dashes.
 
       Follow this template as a guideline:
       \`\`\`markdown
