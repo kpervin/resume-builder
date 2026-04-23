@@ -21,3 +21,5 @@ export function generatePreviewUrl<T extends string>(path: Route<T>): string {
   const baseUrl = env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   return `${baseUrl}${path}` as Route;
 }
+
+export const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));

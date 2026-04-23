@@ -5,6 +5,7 @@ import { GeneratePDFButtonProps } from "@/components/buttons/GeneratePDFButton";
 import { locationField, LocationParsers } from "@/fields/LocationField/location.field";
 import { JobApplication } from "@/payload-types";
 import { generatePreviewUrl } from "@/utils/fns";
+import { condition } from "@/utils/payload-helpers";
 
 export const JobApplicationsCollection = {
   slug: "job-applications",
@@ -104,6 +105,9 @@ export const JobApplicationsCollection = {
             components: {
               Field: "/components/buttons/FetchMetadataButton.tsx",
             },
+            condition: condition<JobApplication>((data) => {
+              return !!(data.jobPostingUrl && data.resume);
+            }),
           },
         },
         {
@@ -119,6 +123,9 @@ export const JobApplicationsCollection = {
               },
             },
             position: "sidebar",
+            condition: condition<JobApplication>((data) => {
+              return !!data.coverLetter;
+            }),
           },
         },
       ],

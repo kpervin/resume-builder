@@ -94,6 +94,9 @@ importers:
       turndown:
         specifier: ^7.2.4
         version: 7.2.4
+      typescript-result:
+        specifier: ^3.5.2
+        version: 3.5.2
       uuid:
         specifier: ^14.0.0
         version: 14.0.0
@@ -4076,6 +4079,10 @@ packages:
   turndown@7.2.4:
     resolution: {integrity: sha512-I8yFsfRzmzK0WV1pNNOA4A7y4RDfFxPRxb3t+e3ui14qSGOxGtiSP6GjeX+Y6CHb7HYaFj7ECUD7VE5kQMZWGQ==}
     engines: {node: '>=18', npm: '>=9'}
+
+  typescript-result@3.5.2:
+    resolution: {integrity: sha512-kYBOXx/WOdwnfRfkOgEy+Or0VKxR9No1znb+5jPBYplksjx/koluC/OwIgBgYCCPgukxMuwXqMcv1qSDlvrlFA==}
+    engines: {node: '>=18'}
 
   typescript@6.0.2:
     resolution: {integrity: sha512-bGdAIrZ0wiGDo5l8c++HWtbaNCWTS4UTv7RaTH/ThVIgjkveJt83m74bBHMJkuCbslY8ixgLBVZJIOiQlQTjfQ==}
@@ -8274,6 +8281,8 @@ snapshots:
   turndown@7.2.4:
     dependencies:
       '@mixmark-io/domino': 2.2.0
+
+  typescript-result@3.5.2: {}
 
   typescript@6.0.2: {}
 

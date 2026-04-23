@@ -1,10 +1,5 @@
-import { config } from "@dotenvx/dotenvx";
 import { createEnv } from "@t3-oss/env-nextjs";
 import * as v from "valibot";
-
-config({
-  convention: "nextjs",
-});
 
 export const env = createEnv({
   server: {
