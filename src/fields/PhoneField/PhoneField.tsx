@@ -4,15 +4,10 @@ import { FieldDescription, FieldError, FieldLabel, TextInput, useField } from "@
 import type { TextFieldClientProps } from "payload";
 import React, { ChangeEvent, FC, useCallback } from "react";
 
+import { formatPhoneNumber } from "@/fields/PhoneField/utils";
+
 const PhoneField: FC<TextFieldClientProps> = ({ path, field: { label, admin }, ...props }) => {
   const { value, setValue, showError } = useField<string>({ path });
-
-  const formatPhoneNumber = (val: string) => {
-    const [_, p1, p2, p3] = val.replace(/\D/g, "").match(/^(\d{0,3})(\d{0,3})(\d{0,4})/) || [];
-    if (p3) return `(${p1}) ${p2}-${p3}`;
-    if (p2) return `(${p1}) ${p2}`;
-    return p1 ? `(${p1}` : "";
-  };
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => setValue(e.target.value.replace(/\D/g, "").slice(0, 10)),

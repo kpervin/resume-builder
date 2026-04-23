@@ -5,3 +5,5 @@ onlyBuiltDependencies:
   - lefthook
   - sharp
   - unrs-resolver
+patchedDependencies:
+  "@payloadcms/db-postgres@3.81.0": patches/@payloadcms__db-postgres@3.81.0.patch

@@ -469,6 +469,7 @@ export const references_contact_methods = pgTable(
     id: varchar("id").primaryKey(),
     type: enum_references_contact_methods_type("type"),
     email: varchar("email"),
+    phone: varchar("phone"),
   },
   (columns) => [
     index("references_contact_methods_order_idx").on(columns._order),

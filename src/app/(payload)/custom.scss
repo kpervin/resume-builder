@@ -32,3 +32,27 @@
 .multi-value-label__text {
   text-overflow: inherit;
 }
+
+dialog.payload-custom-dialog {
+  background-color: var(--theme-elevation-50);
+  color: var(--theme-text);
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 4px;
+  padding: 2.5rem;
+  max-width: 550px;
+  width: 100%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+
+  & > p {
+    margin-bottom: 1rem;
+  }
+  & > .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+dialog.payload-custom-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+}

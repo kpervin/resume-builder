@@ -6,10 +6,18 @@ settings:
 
 pnpmfileChecksum: sha256-nVOmFZ6JT8FxIhcN+S5sJXuP1DtIhTre5ZGvjJU+4tk=
 
+patchedDependencies:
+  '@payloadcms/db-postgres@3.81.0':
+    hash: f27b55210ab888f3b74aa7e67073fc3ea9e106f6dd86005840e72a247742636e
+    path: patches/@payloadcms__db-postgres@3.81.0.patch
+
 importers:
 
   .:
     dependencies:
+      '@dotenvx/dotenvx':
+        specifier: ^1.61.2
+        version: 1.61.2
       '@google/genai':
         specifier: ^1.49.0
         version: 1.49.0
@@ -20,8 +28,8 @@ importers:
         specifier: ^16.2.4
         version: 16.2.4
       '@payloadcms/db-postgres':
-        specifier: ^3.81.0
-        version: 3.81.0(@libsql/client@0.14.0)(payload@3.81.0(graphql@16.13.2)(typescript@6.0.2))
+        specifier: 3.81.0
+        version: 3.81.0(patch_hash=f27b55210ab888f3b74aa7e67073fc3ea9e106f6dd86005840e72a247742636e)(@libsql/client@0.14.0)(payload@3.81.0(graphql@16.13.2)(typescript@6.0.2))
       '@payloadcms/next':
         specifier: 3.81.0
         version: 3.81.0(@types/react@19.2.14)(graphql@16.13.2)(monaco-editor@0.55.1)(next@16.2.3(@babel/core@7.29.0)(@playwright/test@1.59.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(sass@1.77.4))(payload@3.81.0(graphql@16.13.2)(typescript@6.0.2))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@6.0.2)
@@ -58,9 +66,6 @@ importers:
       cross-env:
         specifier: ^7.0.3
         version: 7.0.3
-      dotenv:
-        specifier: 16.4.7
-        version: 16.4.7
       graphql:
         specifier: ^16.8.1
         version: 16.13.2
@@ -94,6 +99,9 @@ importers:
       turndown:
         specifier: ^7.2.4
         version: 7.2.4
+      typescript-result:
+        specifier: ^3.5.2
+        version: 3.5.2
       uuid:
         specifier: ^14.0.0
         version: 14.0.0
@@ -101,9 +109,6 @@ importers:
         specifier: ^1.3.1
         version: 1.3.1(typescript@6.0.2)
     devDependencies:
-      '@dotenvx/dotenvx':
-        specifier: ^1.61.2
-        version: 1.61.2
       '@faker-js/faker':
         specifier: ^10.4.0
         version: 10.4.0
@@ -2523,10 +2528,6 @@ packages:
   domutils@3.2.2:
     resolution: {integrity: sha512-6kZKyUajlDuqlHKVX1w7gyslj9MPIXzIFiz/rGu35uC1wMi+kMhQwGhl4lt9unC9Vb9INnY9Z3/ZA3+FhASLaw==}
 
-  dotenv@16.4.7:
-    resolution: {integrity: sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==}
-    engines: {node: '>=12'}
-
   dotenv@17.4.2:
     resolution: {integrity: sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw==}
     engines: {node: '>=12'}
@@ -4084,6 +4085,10 @@ packages:
     resolution: {integrity: sha512-I8yFsfRzmzK0WV1pNNOA4A7y4RDfFxPRxb3t+e3ui14qSGOxGtiSP6GjeX+Y6CHb7HYaFj7ECUD7VE5kQMZWGQ==}
     engines: {node: '>=18', npm: '>=9'}
 
+  typescript-result@3.5.2:
+    resolution: {integrity: sha512-kYBOXx/WOdwnfRfkOgEy+Or0VKxR9No1znb+5jPBYplksjx/koluC/OwIgBgYCCPgukxMuwXqMcv1qSDlvrlFA==}
+    engines: {node: '>=18'}
+
   typescript@6.0.2:
     resolution: {integrity: sha512-bGdAIrZ0wiGDo5l8c++HWtbaNCWTS4UTv7RaTH/ThVIgjkveJt83m74bBHMJkuCbslY8ixgLBVZJIOiQlQTjfQ==}
     engines: {node: '>=14.17'}
@@ -5609,7 +5614,7 @@ snapshots:
   '@oxlint/binding-win32-x64-msvc@1.59.0':
     optional: true
 
-  '@payloadcms/db-postgres@3.81.0(@libsql/client@0.14.0)(payload@3.81.0(graphql@16.13.2)(typescript@6.0.2))':
+  '@payloadcms/db-postgres@3.81.0(patch_hash=f27b55210ab888f3b74aa7e67073fc3ea9e106f6dd86005840e72a247742636e)(@libsql/client@0.14.0)(payload@3.81.0(graphql@16.13.2)(typescript@6.0.2))':
     dependencies:
       '@payloadcms/drizzle': 3.81.0(@libsql/client@0.14.0)(@types/pg@8.10.2)(payload@3.81.0(graphql@16.13.2)(typescript@6.0.2))(pg@8.16.3)
       '@types/pg': 8.10.2
@@ -6516,8 +6521,6 @@ snapshots:
       dom-serializer: 2.0.0
       domelementtype: 2.3.0
       domhandler: 5.0.3
-
-  dotenv@16.4.7: {}
 
   dotenv@17.4.2: {}
 
@@ -8283,6 +8286,8 @@ snapshots:
   turndown@7.2.4:
     dependencies:
       '@mixmark-io/domino': 2.2.0
+
+  typescript-result@3.5.2: {}
 
   typescript@6.0.2: {}
 

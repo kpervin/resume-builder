@@ -41,9 +41,9 @@ export function buildPdfResponseHeaders(url: URL, filename: string) {
   const disposition =
     url.searchParams.get("disposition") === "attachment" ? "attachment" : "inline";
 
-  const contentDisposition =
-    disposition === "inline" ? "inline" : `attachment; filename="${filename}"`;
-
+  const contentDisposition = `
+    ${disposition === "inline" ? "inline" : "attachment"}; filename="${filename}"`;
+  console.log(contentDisposition);
   return {
     "Content-Type": "application/pdf",
     "Content-Disposition": contentDisposition,

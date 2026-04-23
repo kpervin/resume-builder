@@ -1,17 +1,11 @@
 $schema: ./node_modules/lefthook/schema.json
 colors: false
 pre-commit:
-  parallel: false
-  jobs:
-    - run: pnpm codegen
-    - run: pnpm exec oxfmt {staged_files}
-      stage_fixed: true
-    - run: pnpm exec oxlint {staged_files} --fix
-      stage_fixed: true
-    - run: |
-        git add \
-         src/payload-types.ts \
-         "src/app/(payload)/admin/importMap.js" \
-         src/payload-generated-schema.ts
-
-    - run: moon run :build
+  parallel: true
+  commands:
+    lint:
+      run: pnpm exec oxlint {staged_files}
+    format:
+      run: pnpm exec oxfmt {staged_files}
+    build:
+      run: moon run :build;

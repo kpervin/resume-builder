@@ -1,5 +1,6 @@
 import { config } from "@dotenvx/dotenvx";
 
 config({
-  convention: "nextjs",
+  convention: "flow",
+  quiet: true,
 });
