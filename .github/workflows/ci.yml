@@ -24,6 +24,10 @@ jobs:
       - uses: ./.github/actions/setup
       - name: Lint
         run: moon run :lint
+      - uses: "moonrepo/run-report-action@v1"
+        if: success() || failure()
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
 
   build:
     name: Build
@@ -35,21 +39,25 @@ jobs:
       - uses: ./.github/actions/setup
       - name: Build
         run: moon run :build
+      - uses: "moonrepo/run-report-action@v1"
+        if: success() || failure()
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
 
   test:
     name: Test
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.58.2-noble
     needs: build
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Install system dependencies
-        run: apt-get update && apt-get install -y xz-utils
-      - name: Mark git workspace as safe
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: ./.github/actions/setup
+      - name: Install Playwright Browsers
+        run: pnpx playwright install --with-deps
       - name: Test
         run: moon run :test
+      - uses: "moonrepo/run-report-action@v1"
+        if: success() || failure()
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
