@@ -41,6 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright:v1.58.2-noble
+      options: --user 1001
     needs: build
     steps:
       - uses: actions/checkout@v4
@@ -48,6 +49,8 @@ jobs:
           fetch-depth: 0
       - name: Install system dependencies
         run: apt-get update && apt-get install -y xz-utils
+      - name: Mark git workspace as safe
+        run: git config --global --add safe.directory '*'
       - uses: ./.github/actions/setup
       - name: Test
         run: moon run :test
