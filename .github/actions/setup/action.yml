@@ -8,6 +8,7 @@ runs:
       uses: moonrepo/setup-toolchain@v0
       with:
         auto-install: true
+        cache-base: main
 
     - name: Get pnpm store path
       id: pnpm-cache
@@ -28,7 +29,7 @@ runs:
         path: |
           .moon/cache/hashes
           .moon/cache/outputs
-        key: ${{ runner.os }}-moon-${{ github.sha }}
+        key: ${{ runner.os }}-moon-${{ hashFiles('.prototools', '.moon/workspace.yml', '.moon/toolchains.yml', '**/pnpm-lock.yaml') }}
         restore-keys: |
           ${{ runner.os }}-moon-
 

@@ -14,40 +14,9 @@ env:
   GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
 
 jobs:
-  lint:
-    name: Lint
+  ci:
+    name: CI
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: ./.github/actions/setup
-      - name: Lint
-        run: moon run :lint
-      - uses: "moonrepo/run-report-action@v1"
-        if: success() || failure()
-        with:
-          access-token: ${{ secrets.GITHUB_TOKEN }}
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: ./.github/actions/setup
-      - name: Build
-        run: moon run :build
-      - uses: "moonrepo/run-report-action@v1"
-        if: success() || failure()
-        with:
-          access-token: ${{ secrets.GITHUB_TOKEN }}
-
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-    needs: build
     steps:
       - uses: actions/checkout@v4
         with:
@@ -55,8 +24,8 @@ jobs:
       - uses: ./.github/actions/setup
       - name: Install Playwright Browsers
         run: pnpx playwright install --with-deps
-      - name: Test
-        run: moon run :test
+      - name: CI
+        run: moon ci :lint :build :test
       - uses: "moonrepo/run-report-action@v1"
         if: success() || failure()
         with:
