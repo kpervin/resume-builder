@@ -135,6 +135,7 @@ describe("JobPostingUrlField fetchJobMetadata", async () => {
       collection: "applicants",
       id: applicant.id,
     });
+    await payload.destroy();
   });
 
   test("should fetch job metadata from Indeed", async () => {
@@ -144,8 +145,19 @@ describe("JobPostingUrlField fetchJobMetadata", async () => {
       new Response(
         JSON.stringify({
           solution: {
-            response:
-              "<html lang='en'><body><main><h1>Software Engineer</h1><p>Tech Corp</p></main></body></html>",
+            response: /* html */ `
+              <html lang='en'>
+                <head>
+                  <meta property="og:title" content="Software Engineer"/>
+                </head>
+                <body>
+                  <main>
+                    <h1>Software Engineer</h1>
+                    <p>Tech Corp</p>
+                  </main>
+                </body>
+              </html>
+            `,
           },
         }),
         {
@@ -156,12 +168,16 @@ describe("JobPostingUrlField fetchJobMetadata", async () => {
     );
 
     const result = await fetchJobMetadata(targetUrl, resume.id);
-
-    expect(result).toMatchObject({
-      title: "Senior Developer",
-      company: "Tech Corp",
-      url: `https://ca.indeed.com/viewjob?jk=044c7873cf329c97`,
-    });
+    // @ts-expect-error we haven't exhausted the type here
+    expect(result.error).toBeUndefined();
+    expect.assert(result.ok);
+    expect(result.value).toMatchObject(
+      expect.objectContaining({
+        title: "Senior Developer",
+        company: "Tech Corp",
+        url: `https://ca.indeed.com/viewjob?jk=044c7873cf329c97`,
+      }),
+    );
 
     expect(fetch).toHaveBeenCalled();
   });

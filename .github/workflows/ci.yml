@@ -7,6 +7,8 @@ on:
       - master
 permissions:
   contents: read
+  issues: write
+  pull-requests: write
 
 env:
   PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}

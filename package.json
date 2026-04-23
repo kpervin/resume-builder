@@ -31,7 +31,7 @@
     "@google/genai": "^1.49.0",
     "@googlemaps/places": "^2.4.0",
     "@next/env": "^16.2.4",
-    "@payloadcms/db-postgres": "^3.81.0",
+    "@payloadcms/db-postgres": "3.81.0",
     "@payloadcms/next": "3.81.0",
     "@payloadcms/richtext-lexical": "3.81.0",
     "@payloadcms/ui": "3.81.0",

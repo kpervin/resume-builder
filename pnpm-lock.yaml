@@ -6,6 +6,11 @@ settings:
 
 pnpmfileChecksum: sha256-nVOmFZ6JT8FxIhcN+S5sJXuP1DtIhTre5ZGvjJU+4tk=
 
+patchedDependencies:
+  '@payloadcms/db-postgres@3.81.0':
+    hash: f27b55210ab888f3b74aa7e67073fc3ea9e106f6dd86005840e72a247742636e
+    path: patches/@payloadcms__db-postgres@3.81.0.patch
+
 importers:
 
   .:
@@ -23,8 +28,8 @@ importers:
         specifier: ^16.2.4
         version: 16.2.4
       '@payloadcms/db-postgres':
-        specifier: ^3.81.0
-        version: 3.81.0(@libsql/client@0.14.0)(payload@3.81.0(graphql@16.13.2)(typescript@6.0.2))
+        specifier: 3.81.0
+        version: 3.81.0(patch_hash=f27b55210ab888f3b74aa7e67073fc3ea9e106f6dd86005840e72a247742636e)(@libsql/client@0.14.0)(payload@3.81.0(graphql@16.13.2)(typescript@6.0.2))
       '@payloadcms/next':
         specifier: 3.81.0
         version: 3.81.0(@types/react@19.2.14)(graphql@16.13.2)(monaco-editor@0.55.1)(next@16.2.3(@babel/core@7.29.0)(@playwright/test@1.59.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(sass@1.77.4))(payload@3.81.0(graphql@16.13.2)(typescript@6.0.2))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@6.0.2)
@@ -5609,7 +5614,7 @@ snapshots:
   '@oxlint/binding-win32-x64-msvc@1.59.0':
     optional: true
 
-  '@payloadcms/db-postgres@3.81.0(@libsql/client@0.14.0)(payload@3.81.0(graphql@16.13.2)(typescript@6.0.2))':
+  '@payloadcms/db-postgres@3.81.0(patch_hash=f27b55210ab888f3b74aa7e67073fc3ea9e106f6dd86005840e72a247742636e)(@libsql/client@0.14.0)(payload@3.81.0(graphql@16.13.2)(typescript@6.0.2))':
     dependencies:
       '@payloadcms/drizzle': 3.81.0(@libsql/client@0.14.0)(@types/pg@8.10.2)(payload@3.81.0(graphql@16.13.2)(typescript@6.0.2))(pg@8.16.3)
       '@types/pg': 8.10.2

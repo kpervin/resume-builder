@@ -13,16 +13,8 @@ export async function setup() {
    * We are going to get a timeout regardless for the time being until
    * https://github.com/payloadcms/payload/issues/15674 is resolved
    */
-  await getPayload({
-    config,
-    onInit: async (payload) => {
-      payload.db.pool.on("error", (err) => {
-        console.error("Unexpected error on idle client", err);
-        process.exit(0);
-      });
-      await payload.destroy();
-    },
-  });
+  const payload = await getPayload({ config });
+  await payload.destroy();
 }
 
 export async function teardown() {

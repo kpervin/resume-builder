@@ -97,9 +97,8 @@ function convertToTokenEfficientMarkdown(rawHtml: string) {
 
   const mainHtml = $("main").html() ?? $("[role='main']").html() ?? $("body").html();
 
-  if (!mainHtml || !structuredData) {
-    return Result.error(new ParseError("Could not parse HTML"));
-  }
+  if (!structuredData) return Result.error(new ParseError("Unexpected empty structured data."));
+  if (!mainHtml) return Result.ok(structuredData);
 
   const turndownService = new TurndownService({
     headingStyle: "atx",
