@@ -41,12 +41,13 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright:v1.58.2-noble
-      options: --user 1001
     needs: build
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Install system dependencies
+        run: apt-get update && apt-get install -y xz-utils
       - uses: ./.github/actions/setup
       - name: Test
         run: moon run :test
