@@ -11,6 +11,7 @@ permissions:
 env:
   PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
   GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+  GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
 
 jobs:
   lint:
