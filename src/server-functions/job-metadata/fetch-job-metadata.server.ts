@@ -119,10 +119,6 @@ function convertToTokenEfficientMarkdown(rawHtml: string) {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Gemini call with exponential-backoff retry
-// Returns Result — callers never need try/catch.
-// ---------------------------------------------------------------------------
 async function callGeminiWithRetry(
   contents: string,
   systemInstruction: string,
