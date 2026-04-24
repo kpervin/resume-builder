@@ -1,4 +1,4 @@
-import { CollectionBeforeValidateHook, CollectionConfig, FieldHook, Validate } from "payload";
+import { CollectionBeforeValidateHook, CollectionConfig, Validate } from "payload";
 import * as v from "valibot";
 
 import { locationField, LocationParsers } from "@/fields/LocationField/location.field";
@@ -15,7 +15,7 @@ export const ApplicantsCollection = {
     beforeValidate: [
       ({ data }) => {
         if (!data) return;
-        data.fullName = `${data.name?.firstName} ${data.name?.lastName}`;
+        data.fullName = `${data?.firstName} ${data?.lastName}`;
       },
     ] satisfies CollectionBeforeValidateHook<Applicant>[],
   },
@@ -30,19 +30,15 @@ export const ApplicantsCollection = {
     },
     {
       type: "group",
-      name: "name",
-      hooks: {
-        afterChange: [
-          (({ data, value }) => {
-            if (!value || !data) return value;
-            data.fullName = `${value?.firstName} ${value?.lastName}`;
-            return value;
-          }) satisfies FieldHook<Applicant, Applicant["name"]>,
-        ],
-      },
+      label: "Name",
       fields: [
-        { name: "firstName", type: "text" },
-        { name: "lastName", type: "text" },
+        {
+          type: "row",
+          fields: [
+            { name: "firstName", type: "text", required: true },
+            { name: "lastName", type: "text", required: true },
+          ],
+        },
       ],
     },
     locationField(LocationParsers.address, {
