@@ -21,5 +21,9 @@
       }
     ]
   },
-  "ignorePatterns": [".next/"]
+  "ignorePatterns": [".next/"],
+  "options": {
+    "typeAware": true,
+    "typeCheck": true
+  }
 }
