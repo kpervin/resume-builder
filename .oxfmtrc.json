@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
-  "ignorePatterns": ["**/importMap.js", "**/payload-types.ts"],
+  "ignorePatterns": ["**/importMap.js", "**/payload-types.ts", "**/payload-generated-schema.ts"],
   "sortImports": {
     "sortSideEffects": true
   }

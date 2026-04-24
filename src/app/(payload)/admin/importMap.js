@@ -29,6 +29,7 @@ import { default as default_67f38d57db9b466690d38538ea13d5b0 } from '../../../co
 import { default as default_fa427152ebef7bbd59b2f7f2b1fc97c3 } from '../../../components/buttons/FetchMetadataButton.tsx'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
+/** @type import('payload').ImportMap */
 export const importMap = {
   "/fields/LocationField/LocationAutocompleteField.tsx#default": default_46bf42cc7dbb455ba64eaad6e83b94d5,
   "/components/TransparentGroup.tsx#default": default_ded0d7cfffc97b355d855f5ab217a1d7,

@@ -12,6 +12,13 @@ export const JobApplicationsCollection = {
   admin: {
     useAsTitle: "jobTitle",
     preview: ({ id }) => generatePreviewUrl(`/job-applications/${id}`),
+    listSearchableFields: ["jobTitle", "company"],
+    defaultColumns: [
+      "jobTitle",
+      "company",
+      "jobPostingUrl",
+      "_status",
+    ] satisfies (keyof JobApplication)[],
   },
   versions: {
     drafts: true,
@@ -41,6 +48,7 @@ export const JobApplicationsCollection = {
       name: "company",
       type: "text",
       required: true,
+      index: true,
       admin: {
         description: "Company applying for the position",
       },

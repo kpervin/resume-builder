@@ -4,8 +4,16 @@ pre-commit:
   parallel: true
   commands:
     lint:
-      run: pnpm exec oxlint {staged_files}
+      run: pnpm exec oxlint {staged_files} --no-error-on-unmatched-pattern
+      stage_fixed: true
     format:
-      run: pnpm exec oxfmt {staged_files}
+      run: pnpm exec oxfmt {staged_files} --no-error-on-unmatched-pattern
+      stage_fixed: true
     build:
-      run: moon run :build;
+      run: |
+        moon run :codegen;
+        git add \
+         src/payload-types.ts \
+         "src/app/(payload)/admin/importMap.js" \
+         src/payload-generated-schema.ts;
+        moon run :build;
