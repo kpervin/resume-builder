@@ -3,14 +3,16 @@ $schema: "https://moonrepo.dev/schemas/project.json"
 tasks:
   lint:
     command: "pnpm exec oxlint ."
-
+    deps:
+      - "codegen"
   fmt:
     command: "pnpm fmt:check"
     inputs:
       - "src/**/*.ts"
       - "src/**/*.tsx"
       - ".oxfmtrc.json"
-
+    deps:
+      - "codegen"
   codegen:
     command: "pnpm codegen"
     inputs:
