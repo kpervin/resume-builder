@@ -70,10 +70,8 @@ describe("JobPostingUrlField fetchJobMetadata", async () => {
       draft: true,
       collection: "applicants",
       data: {
-        name: {
-          firstName: faker.person.firstName(),
-          lastName: faker.person.lastName(),
-        },
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
         phone: faker.phone.number(),
         location: address,
         email: faker.internet.email(),
