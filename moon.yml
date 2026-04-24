@@ -27,6 +27,9 @@ tasks:
       - "src/**/*"
       - "next.config.ts"
       - "tsconfig.json"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
     outputs:
       - ".next"
     deps:
