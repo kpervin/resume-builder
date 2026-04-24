@@ -1,6 +1,6 @@
 "use client";
 
-import { google } from "@googlemaps/places/build/protos/protos";
+import type { google } from "@googlemaps/places/build/protos/protos";
 import { useField, useForm } from "@payloadcms/ui";
 import type { FormState, TextFieldClientProps } from "payload";
 import { FieldState } from "payload";
@@ -14,7 +14,7 @@ import {
   GooglePlaceStub,
 } from "@/fields/LocationField/google.client";
 import { parseLocationTemplate } from "@/fields/LocationField/utils";
-import { Location } from "@/payload-types";
+import type { Location } from "@/payload-types";
 
 type LocationAutocompleteFieldClientProps = TextFieldClientProps & {
   template: string;
@@ -97,6 +97,7 @@ function LocationAutocompleteField({
       onSelect={handleGoogleApiSelect}
       renderItem={renderPlace}
       keyMapper={(item) => item.placeId}
+      autocomplete={"street-address"}
     />
   );
 }

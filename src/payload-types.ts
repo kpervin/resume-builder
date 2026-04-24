@@ -132,10 +132,8 @@ export interface UserAuthOperations {
 export interface Applicant {
   id: number;
   fullName?: string | null;
-  name?: {
-    firstName?: string | null;
-    lastName?: string | null;
-  };
+  firstName: string;
+  lastName: string;
   location: Location;
   phone?: string | null;
   email: string;
@@ -438,12 +436,8 @@ export interface PayloadMigration {
  */
 export interface ApplicantsSelect<T extends boolean = true> {
   fullName?: T;
-  name?:
-    | T
-    | {
-        firstName?: T;
-        lastName?: T;
-      };
+  firstName?: T;
+  lastName?: T;
   location?: T | LocationSelect<T>;
   phone?: T;
   email?: T;

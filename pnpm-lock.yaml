@@ -18,6 +18,9 @@ importers:
       '@dotenvx/dotenvx':
         specifier: ^1.62.0
         version: 1.62.0
+      '@fastify/deepmerge':
+        specifier: ^3.2.1
+        version: 3.2.1
       '@google/genai':
         specifier: ^1.50.1
         version: 1.50.1
@@ -879,6 +882,9 @@ packages:
   '@faker-js/faker@10.4.0':
     resolution: {integrity: sha512-sDBWI3yLy8EcDzgobvJTWq1MJYzAkQdpjXuPukga9wXonhpMRvd1Izuo2Qgwey2OiEoRIBr35RMU9HJRoOHzpw==}
     engines: {node: ^20.19.0 || ^22.13.0 || ^23.5.0 || >=24.0.0, npm: '>=10'}
+
+  '@fastify/deepmerge@3.2.1':
+    resolution: {integrity: sha512-N5Oqvltoa2r9z1tbx4xjky0oRR60v+T47Ic4J1ukoVQcptLOrIdRnCSdTGmOmajZuHVKlTnfcmrjyqsGEW1ztA==}
 
   '@floating-ui/core@1.7.5':
     resolution: {integrity: sha512-1Ih4WTWyw0+lKyFMcBHGbb5U5FtuHJuujoyyr5zTaWS5EYMeT6Jb2AuDeftsCsEuchO+mM2ij5+q9crhydzLhQ==}
@@ -4944,6 +4950,8 @@ snapshots:
       react-dom: 19.2.4(react@19.2.4)
 
   '@faker-js/faker@10.4.0': {}
+
+  '@fastify/deepmerge@3.2.1': {}
 
   '@floating-ui/core@1.7.5':
     dependencies:

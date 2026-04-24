@@ -48,7 +48,7 @@ export async function GET(request: Request, ctx: RouteContext<"/resumes/[id]">):
 
   const fullName =
     applicant?.fullName ||
-    `${applicant?.name?.firstName ?? ""} ${applicant?.name?.lastName ?? ""}`.trim() ||
+    `${applicant?.firstName ?? ""} ${applicant?.lastName ?? ""}`.trim() ||
     "Resume";
 
   const safeName = String(fullName)

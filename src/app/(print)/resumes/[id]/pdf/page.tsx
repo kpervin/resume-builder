@@ -68,7 +68,7 @@ export default async function ResumePrintPage({ params }: Props) {
 
   const fullName =
     applicant.fullName ||
-    `${applicant.name?.firstName ?? ""} ${applicant.name?.lastName ?? ""}`.trim() ||
+    `${applicant.firstName ?? ""} ${applicant.lastName ?? ""}`.trim() ||
     "Resume";
 
   const address = formatHeaderAddress(applicant);

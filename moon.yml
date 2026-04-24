@@ -10,7 +10,7 @@ tasks:
     inputs:
       - "src/**/*.ts"
       - "src/**/*.tsx"
-      - ".oxfmtrc.json"
+      - ".oxfmtrc.ts"
     deps:
       - "codegen"
   codegen:
