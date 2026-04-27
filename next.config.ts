@@ -10,7 +10,7 @@ const __filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(__filename);
 
 const nextConfig: NextConfig = {
-  output: "standalone",
+  ...(!!process.env.DOCKER && { output: "standalone" }),
   transpilePackages: ["@t3-oss/env-nextjs", "@t3-oss/env-core"],
   images: {
     localPatterns: [
