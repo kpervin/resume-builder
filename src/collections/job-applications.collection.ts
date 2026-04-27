@@ -1,9 +1,10 @@
-import { CollectionConfig, FilterOptions, Validate } from "payload";
+import { CollectionConfig, FieldHook, FilterOptions, Validate } from "payload";
 import * as v from "valibot";
 
 import { GeneratePDFButtonProps } from "@/components/buttons/GeneratePDFButton";
 import { locationField, LocationParsers } from "@/fields/LocationField/location.field";
 import { JobApplication } from "@/payload-types";
+import { getHandler } from "@/server-functions/job-metadata/job-handlers.server";
 import { generatePreviewUrl } from "@/utils/fns";
 import { condition } from "@/utils/payload-helpers";
 
@@ -29,8 +30,18 @@ export const JobApplicationsCollection = {
       name: "jobPostingUrl",
       type: "text",
       required: true,
+      unique: true,
       admin: {
         description: "Link to the job posting",
+      },
+      hooks: {
+        beforeValidate: [
+          (args) => {
+            if (!args.value) return "";
+            const { handler, url } = getHandler(args.value);
+            return handler.normalize(url);
+          },
+        ] satisfies FieldHook<JobApplication, string, JobApplication>[],
       },
       validate: ((value) => {
         return v.is(v.pipe(v.string(), v.url()), value) ? true : "Please enter a valid URL";

@@ -128,20 +128,28 @@ async function callGeminiWithRetry(
   const MAX_RETRIES = 3;
 
   try {
-    const res = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents,
-      config: {
-        tools: [{ urlContext: {} }],
-        responseMimeType: "application/json",
-        responseJsonSchema: JsonSchema,
-        systemInstruction,
+    const res = await Result.try(
+      () =>
+        ai.models.generateContent({
+          model: "gemini-3-flash-preview",
+          contents,
+          config: {
+            tools: [{ urlContext: {} }],
+            responseMimeType: "application/json",
+            responseJsonSchema: JsonSchema,
+            systemInstruction,
+          },
+        }),
+      (err) => {
+        console.error(err);
+        if (err instanceof Error) return new IOError(err.message);
+        return new IOError("Failed to call Gemini API");
       },
-    });
+    );
+    if (res.error) return Result.error(res.error);
+    if (!res.value?.text) return Result.error(new IOError("No text returned from Gemini."));
 
-    if (!res.text) return Result.error(new IOError("No text returned from Gemini."));
-
-    const { output, issues } = v.safeParse(ResponseSchema, JSON.parse(res.text));
+    const { output, issues } = v.safeParse(ResponseSchema, JSON.parse(res.value.text));
 
     if (issues) {
       return Result.error(
@@ -202,17 +210,34 @@ async function* runFetchJobMetadata(urlInput: string, resumeId: number) {
 
   const markdown = yield* convertToTokenEfficientMarkdown(html);
 
-  const { resume, applicant } = yield* await Result.try(
-    async () => {
-      const payload = await getPayload({ config });
-      const resume = await payload.findByID({ collection: "resumes", id: resumeId });
-      const applicant =
-        typeof resume.applicant === "number"
-          ? await payload.findByID({ collection: "applicants", id: resume.applicant })
-          : resume.applicant;
-      return { resume, applicant };
+  const payload = yield* Result.try(
+    () => getPayload({ config }),
+    (err) => {
+      console.error(err);
+      return new IOError("Failed to fetch payload");
     },
-    (error) => new IOError("Failed to load resume/applicant from Payload", { cause: error }),
+  );
+
+  const resume = yield* Result.try(
+    () => payload.findByID({ collection: "resumes", id: resumeId }),
+    (err) => {
+      console.error(err);
+      return new IOError("Failed to fetch resume from Payload");
+    },
+  );
+
+  const applicant = yield* Result.try(
+    () =>
+      typeof resume.applicant === "number"
+        ? payload.findByID({
+            collection: "applicants",
+            id: resume.applicant,
+          })
+        : resume.applicant,
+    (err) => {
+      console.error(err);
+      return new IOError("Failed to fetch applicant from Payload");
+    },
   );
 
   console.log("Sending HTML to Gemini for parsing...");
